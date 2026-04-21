@@ -48,8 +48,6 @@ public class Setup {
      */
     @SubscribeEvent
     public static void registerParticleProviderHandler(final RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleTypes.BALL_GROW.get(), BallGrowParticle.Provider::new);
-        event.registerSpriteSet(ParticleTypes.LIGHT_STREAK.get(), LightStreakParticle.Provider::new);
         event.registerSpriteSet(ParticleTypes.CUSTOM_WHITE_ASH.get(), CustomWhiteAshParticle.Provider::new);
         event.registerSpriteSet(ParticleTypes.CUSTOM_NO_GRAVITY_WHITE_ASH.get(), CustomWhiteAshNoGravityParticle.Provider::new);
     }
@@ -90,7 +88,6 @@ public class Setup {
     public static void onRegisterMenuScreens(final RegisterMenuScreensEvent event) {
         event.register(MenuTypes.GRAVITY_SELECTION_MENU.get(), GravitySelectionScreen::new);
     }
-
 
     /**
      * PLA API的注册玩家动画控制器，类似gecklib的动画控制器

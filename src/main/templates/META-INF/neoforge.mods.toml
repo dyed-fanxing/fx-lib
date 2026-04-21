@@ -68,18 +68,20 @@ side = "BOTH"
 
 
 
-[[dependencies."${mod_id}"]]
+
+
+[[dependencies."${mod_id}"]] #（可选）
 modId = "geckolib"
-mandatory = true
+type = "optional"
 versionRange = "${geckolib_version_range}"   # 根据实际情况写
-ordering = "NONE"
+ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies."${mod_id}"]] #（可选）
 modId = "player_animation_library"   # 注意实际 modId
-mandatory = true
+type = "optional"
 versionRange = "${pal_version_range}"
-ordering = "NONE"
+ordering = "AFTER"
 side = "BOTH"
 
 

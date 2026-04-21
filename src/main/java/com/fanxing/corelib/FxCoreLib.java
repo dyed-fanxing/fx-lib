@@ -1,7 +1,6 @@
 package com.fanxing.corelib;
 
 import com.fanxing.corelib.phys.motion.PhysicsMotionModel;
-import com.fanxing.corelib.registry.DataComponents;
 import com.fanxing.corelib.registry.*;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
