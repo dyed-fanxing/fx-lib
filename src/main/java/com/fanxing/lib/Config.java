@@ -25,7 +25,7 @@ public class Config {
             builder.push("general");
             builder.translation(String.format("config.%s.general", FxLib.MOD_ID));
             this.segments = builder
-                    .translation("config.fx_corelib.general.segments")
+                    .translation("config.fx_lib.general.segments")
                     .defineInRange("segments", 32, 4, 128);
             builder.pop();
         }
@@ -50,11 +50,6 @@ public class Config {
 
     public static class Server {
         public Server(ModConfigSpec.Builder builder) {
-            // ----- 通用设置 -----
-            builder.push("general");
-            builder.translation(String.format("config.%s.general", FxLib.MOD_ID));
-            builder.pop();
         }
     }
-    public record EntityExpEntry(int exp, int limit) {}
 }

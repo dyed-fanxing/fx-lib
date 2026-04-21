@@ -29,7 +29,7 @@ public interface EnergyGlowRenderType {
             "energy_triangles", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 1536, false, sortOnUpload,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTextureState(new TextureStateShard(texture, false, false))
                     .setTransparencyState(ADDITIVE_TRANSPARENCY)
                     .setCullState(NO_CULL)
                     .createCompositeState(false)
@@ -44,7 +44,7 @@ public interface EnergyGlowRenderType {
             "energy_triangles", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLES, 1536, false, sortOnUpload,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTextureState(new TextureStateShard(texture, false, false))
                     .setTransparencyState(ADDITIVE_TRANSPARENCY)
                     .setCullState(NO_CULL)
                     .createCompositeState(false)

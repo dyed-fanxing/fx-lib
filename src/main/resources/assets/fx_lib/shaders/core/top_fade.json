@@ -1,6 +1,6 @@
 {
-  "vertex": "fx_corelib:top_fade",
-  "fragment": "fx_corelib:top_fade",
+  "vertex": "fx_lib:top_fade",
+  "fragment": "fx_lib:top_fade",
   "samplers": [
     { "name": "Sampler0" },
     { "name": "Sampler1" },

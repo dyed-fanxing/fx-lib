@@ -1,8 +1,8 @@
 {
-  "itemGroup.fx_corelib": "帆星核心依赖库",
+  "itemGroup.fx_lib": "帆星核心依赖库",
   "mount.onboard.double.key.dismount": "双击 %1$s 来脱离",
-  "fx_corelib.debug.ccd.on": "CCD扫掠: 显示",
-  "fx_corelib.debug.ccd.off": "CCD扫掠: 关闭",
-  "config.fx_corelib.general.segments": "圆段数",
-  "gui.fx_corelib.close": "关闭"
+  "fx_lib.debug.ccd.on": "CCD扫掠: 显示",
+  "fx_lib.debug.ccd.off": "CCD扫掠: 关闭",
+  "config.fx_lib.general.segments": "圆段数",
+  "gui.fx_lib.close": "关闭"
 }

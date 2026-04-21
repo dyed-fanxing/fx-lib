@@ -1,6 +1,6 @@
 {
-  "vertex": "fx_corelib:fly_basic",
-  "fragment": "fx_corelib:fly_basic",
+  "vertex": "fx_lib:fly_basic",
+  "fragment": "fx_lib:fly_basic",
   "samplers": [
     { "name": "Sampler0" },
     { "name": "Sampler1" },

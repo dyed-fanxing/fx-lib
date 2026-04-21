@@ -1,6 +1,6 @@
 {
-  "vertex": "fx_corelib:screen",
-  "fragment": "fx_corelib:screen",
+  "vertex": "fx_lib:screen",
+  "fragment": "fx_lib:screen",
   "samplers": [
     { "name": "Sampler0" },
     { "name": "Sampler1" },

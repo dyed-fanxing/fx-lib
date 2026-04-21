@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @since 2025-11-19 20:02
  */
 public record AnimPacket(int entityId, int id,float speed) implements CustomPacketPayload{
-    public static final CustomPacketPayload.Type<AnimPacket> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "anim_id_packet"));
+    public static final Type<AnimPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "anim_id_packet"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AnimPacket> STREAM_CODEC = CustomPacketPayload.codec(AnimPacket::write, AnimPacket::new);
     private static final Logger log = LoggerFactory.getLogger(AnimPacket.class);
 

@@ -1,6 +1,6 @@
 {
-  "vertex": "fx_corelib:entity_translucent_emissive_adjustable",
-  "fragment": "fx_corelib:entity_translucent_emissive_adjustable",
+  "vertex": "fx_lib:entity_translucent_emissive_adjustable",
+  "fragment": "fx_lib:entity_translucent_emissive_adjustable",
   "samplers": [
     { "name": "Sampler0" },
     { "name": "Sampler1" },

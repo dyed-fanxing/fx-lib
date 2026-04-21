@@ -1,6 +1,6 @@
 {
   "values": [
-//    "#fx_corelib:beam_weapon",
-    "fx_corelib:pig_talisman"
+//    "#fx_lib:beam_weapon",
+    "fx_lib:pig_talisman"
   ]
 }

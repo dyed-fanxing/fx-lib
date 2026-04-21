@@ -1,6 +1,6 @@
 {
-  "vertex": "fx_corelib:white_entity",
-  "fragment": "fx_corelib:white_entity",
+  "vertex": "fx_lib:white_entity",
+  "fragment": "fx_lib:white_entity",
   "samplers": [
     { "name": "Sampler0" },
     { "name": "Sampler1" },

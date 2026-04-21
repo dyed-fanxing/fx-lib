@@ -46,7 +46,7 @@ public class EntityDialogue {
     // 显示对话（使用实体翻译键 + .dialogue.阶段）
     public static void showDialogue(ServerPlayer player, Entity entity, String phase) {
         // 格式：实体翻译键.dialogue.阶段
-        // 例如：entity.fx_corelib.sans.dialogue.mercy
+        // 例如：entity.fx_lib.sans.dialogue.mercy
         String dialogueId = entity.getType().getDescriptionId() + ".dialogue." + phase;
         show(player, dialogueId, entity);
     }

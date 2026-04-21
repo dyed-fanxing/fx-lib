@@ -12,5 +12,5 @@ public class Attributes {
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, FxLib.MOD_ID);
     // 伤害间隔（单位：tick）
     public static final Holder<Attribute> DAMAGE_INTERVAL = ATTRIBUTES.register("damage_interval",
-            () -> new RangedAttribute("attribute.fx_corelib.damage_interval", 20, 0, 20).setSyncable(true));
+            () -> new RangedAttribute("attribute.fx_lib.damage_interval", 20, 0, 20).setSyncable(true));
 }

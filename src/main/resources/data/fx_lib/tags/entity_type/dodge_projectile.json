@@ -1,6 +1,6 @@
 {
     "values": [
         "minecraft:enderman",
-        "fx_corelib:sans"
+        "fx_lib:sans"
     ]
 }

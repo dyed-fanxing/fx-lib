@@ -13,7 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record SyncMotionPayload(int entityId, byte[] data) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SyncMotionPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "sync_motion"));
+    public static final Type<SyncMotionPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "sync_motion"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncMotionPayload> STREAM_CODEC = CustomPacketPayload.codec(SyncMotionPayload::write, SyncMotionPayload::new);
 
     public SyncMotionPayload(FriendlyByteBuf buf) {

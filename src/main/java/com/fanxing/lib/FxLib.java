@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @Mod(FxLib.MOD_ID)
 public class FxLib {
     // 在公共位置定义mod id供所有内容引用
-    public static final String MOD_ID = "fx_corelib";
+    public static final String MOD_ID = "fx_lib";
     public static final Logger LOGGER = LogUtils.getLogger();
 
 
@@ -40,7 +40,7 @@ public class FxLib {
         ItemTypes.register(modEventBus);            // 物品注册
         EntityTypes.register(modEventBus);          // 实体注册
         MobEffectTypes.registry(modEventBus);       // buff注册
-        SoundEvnets.register(modEventBus);           // 声音注册
+        SoundEvents.register(modEventBus);           // 声音注册
         ParticleTypes.register(modEventBus);        // 粒子注册
         MenuTypes.register(modEventBus);            // 菜单注册
         AttachmentTypes.register(modEventBus);      // 附件注册

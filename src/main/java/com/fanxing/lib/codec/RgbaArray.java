@@ -1,6 +1,6 @@
-//package com.fanxing.fx_corelib.common.codec;
+package com.fanxing.lib.codec;//package com.fanxing.fx_lib.common.codec;
 //
-//import com.fanxing.fx_corelib.utils.ColorUtils;
+//import com.fanxing.fx_lib.utils.ColorUtils;
 //import com.mojang.serialization.Codec;
 //import io.netty.buffer.ByteBuf;
 //import net.minecraft.network.codec.ByteBufCodecs;

@@ -35,7 +35,7 @@ public interface LightingRenderType {
             "lightning_triangles", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTextureState(new TextureStateShard(texture, false, false))
                     .setTransparencyState(LIGHTNING_TRANSPARENCY)
                     .setOutputState(WEATHER_TARGET)
                     .setCullState(NO_CULL)
@@ -81,7 +81,7 @@ public interface LightingRenderType {
             "lightning_additive", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTextureState(new TextureStateShard(texture, false, false))
                     .setTransparencyState(ADDITIVE_TRANSPARENCY)
                     .setCullState(NO_CULL)
                     .createCompositeState(false)

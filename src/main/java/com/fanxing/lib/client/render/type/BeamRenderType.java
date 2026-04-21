@@ -30,7 +30,7 @@ public interface BeamRenderType {
             "beam_no_cull", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 1536, false, translucent,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTextureState(new TextureStateShard(texture, false, false))
                     .setTransparencyState(translucent ? TRANSLUCENT_TRANSPARENCY : NO_TRANSPARENCY)
                     .setWriteMaskState(translucent ? COLOR_WRITE : COLOR_DEPTH_WRITE) // 透明只写颜色，不透明写颜色+深度
                     .setCullState(NO_CULL)

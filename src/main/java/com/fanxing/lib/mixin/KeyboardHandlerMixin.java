@@ -36,7 +36,7 @@ public class KeyboardHandlerMixin {
                                     .append(net.minecraft.network.chat.Component.translatable("debug.prefix")
                                             .withStyle(net.minecraft.ChatFormatting.YELLOW, net.minecraft.ChatFormatting.BOLD))
                                     .append(net.minecraft.network.chat.CommonComponents.SPACE)
-                                    .append(net.minecraft.network.chat.Component.translatable("fx_corelib.debug.ccd." + 
+                                    .append(net.minecraft.network.chat.Component.translatable("fx_lib.debug.ccd." + 
                                             (OBBCCDDebugRenderer.isShowCCDDebug() ? "on" : "off")))
                     );
                 }

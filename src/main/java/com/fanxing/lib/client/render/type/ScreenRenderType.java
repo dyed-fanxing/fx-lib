@@ -17,8 +17,8 @@ public interface ScreenRenderType {
     Function<ResourceLocation, RenderType> SCREEN = Util.memoize((texture) -> RenderType.create(
             "screen",DefaultVertexFormat.NEW_ENTITY,VertexFormat.Mode.QUADS,256,false,true,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(Shaders::getScreenShader))
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setShaderState(new ShaderStateShard(Shaders::getScreenShader))
+                    .setTextureState(new TextureStateShard(texture, false, false))
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setCullState(NO_CULL)
                     .setWriteMaskState(COLOR_DEPTH_WRITE)
@@ -27,8 +27,8 @@ public interface ScreenRenderType {
     static RenderType screen(ResourceLocation texture) {return RenderType.create(
                 "screen",DefaultVertexFormat.NEW_ENTITY,VertexFormat.Mode.QUADS,256,false,true,
                 RenderType.CompositeState.builder()
-                        .setShaderState(new RenderStateShard.ShaderStateShard(Shaders::getScreenShader))
-                        .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                        .setShaderState(new ShaderStateShard(Shaders::getScreenShader))
+                        .setTextureState(new TextureStateShard(texture, false, false))
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setCullState(NO_CULL)
                         .setWriteMaskState(COLOR_DEPTH_WRITE)
