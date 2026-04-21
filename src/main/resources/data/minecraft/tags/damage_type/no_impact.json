@@ -1,0 +1,6 @@
+{
+  "values": [
+    "fx_corelib:frame",
+    "fx_corelib:frame_blockable"
+  ]
+}

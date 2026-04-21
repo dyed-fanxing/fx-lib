@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.fanxing.corelib.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractArrowMixin",
+    "LivingEntityAccessor",
+    "PlayerWantsToStopRidingMixin"
+  ],
+  "client": [
+    "ClientPacketListenerMixin",
+    "KeyboardHandlerMixin",
+    "ModelPartAccessor",
+    "MountCrosshairGuiMixin",
+    "MouseHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

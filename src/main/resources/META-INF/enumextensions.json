@@ -1,0 +1,22 @@
+{
+    "entries": [
+        {
+            "enum": "net/minecraft/world/damagesource/DamageEffects",
+            "name": "fx_corelib_SILENT",
+            "constructor": "(Ljava/lang/String;Ljava/util/function/Supplier;)V",
+            "parameters": {
+                "class": "com/fanxing/fx_corelib/common/EnumParameters",
+                "field": "SILENT"
+            }
+        },
+        {
+            "enum": "net/minecraft/world/damagesource/DeathMessageType",
+            "name": "fx_corelib_CUSTOM_NOUN_VERB_DEATH",
+            "constructor": "(Ljava/lang/String;Lnet/neoforged/neoforge/common/damagesource/IDeathMessageProvider;)V",
+            "parameters": {
+                "class": "com/fanxing/fx_corelib/common/EnumParameters",
+                "field": "CUSTOM_NOUN_VERB_DEATH"
+            }
+        }
+    ]
+}

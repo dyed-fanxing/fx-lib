@@ -1,0 +1,197 @@
+package com.fanxing.corelib.client.render.type;
+
+import com.fanxing.corelib.client.render.ResourceLocations;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.OptionalDouble;
+import java.util.function.BiFunction;
+
+import static net.minecraft.client.renderer.RenderStateShard.*;
+
+/**
+ * @author Sakpeipei
+ * @since 2026/1/6 13:50
+ */
+public interface RenderTypes {
+    BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_DEPTH = Util.memoize((texture, isAffectsOutline) ->
+            RenderType.create("entity_translucent_emissive", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, true,
+                    RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                    .setTextureState(new TextureStateShard(texture, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .setOverlayState(OVERLAY)
+                    .createCompositeState(isAffectsOutline))
+    );
+
+    RenderType ENTITY_TRANSLUCENT_EMISSIVE_WHITE = ENTITY_TRANSLUCENT_EMISSIVE_DEPTH.apply(ResourceLocations.WHITE_TEXTURE, true);
+
+    // ========== ENTITY_TRANSLUCENT_EMISSIVE 渲染类型 ==========
+    /**
+     * 适合渲染：圆，任意三角形网格等
+     */
+    BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLES = Util.memoize((texture, sortOnUpload) -> RenderType.create(
+            "entity_translucent_emissive_triangles", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 1536, false, sortOnUpload,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                    .setTextureState(new TextureStateShard(texture, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
+    ));
+    RenderType ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_WHITE = ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLES.apply(ResourceLocations.WHITE_TEXTURE, true);
+    /**
+     * 适合渲染：圆柱侧面、胶囊体圆柱部分侧面等条带结构
+     * 顶点数最少：segments * 2 个顶点
+     */
+    BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP = Util.memoize((texture, sortOnUpload) -> RenderType.create(
+            "entity_translucent_emissive_triangle_strip", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, sortOnUpload,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                    .setTextureState(new TextureStateShard(texture, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
+    ));
+    RenderType ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP_WHITE = ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP.apply(ResourceLocations.WHITE_TEXTURE, true);
+    /**
+     * 适合渲染：圆，扇形
+     * 但是注意！！！！不能共用同一个buffer缓冲池，每个渲染类型会共有缓冲池，所有提交的顶点都会在这个缓冲池里，最后批量一起提交给GPU，GPU会将所有顶点按照FAN模式渲染，会导致第二个提交的独立顶点和第一个产生关系
+     * 顶点数最少：segments + 2 个顶点
+     */
+    BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN = Util.memoize((texture, sortOnUpload) -> RenderType.create(
+            "entity_translucent_emissive_triangle_fan", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_FAN, 1536, false, sortOnUpload,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                    .setTextureState(new TextureStateShard(texture, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
+    ));
+    RenderType ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN_WHITE = ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN.apply(ResourceLocations.WHITE_TEXTURE, true);
+
+
+    // ========== ENERGY_SWIRL 能量漩涡静态方法（带偏移） ==========
+    static RenderType energySwirl(ResourceLocation resourceLocation, float uOffset, float vOffset) {
+        return RenderType.create("energy_swirl",DefaultVertexFormat.NEW_ENTITY,VertexFormat.Mode.QUADS,1536,false,true,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
+                        .setTextureState(new TextureStateShard(resourceLocation, false, false))
+                        .setTexturingState(new OffsetTexturingStateShard(uOffset, vOffset))
+                        .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                        .setCullState(NO_CULL)
+                        .createCompositeState(false)
+        );
+    }
+//    /**
+//     * ENERGY_SWIRL_TRIANGLES - 能量漩涡效果（带偏移，三角形模式）
+//     */
+//    static RenderType energySwirlTriangles(ResourceLocation resourceLocation, float uOffset, float vOffset) {
+//        return RenderType.create("energy_swirl_triangles", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 1536, false, true,
+//                RenderType.CompositeState.builder()
+//                        .setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
+//                        .setTextureState(new TextureStateShard(resourceLocation, false, false))
+//                        .setTexturingState(new OffsetTexturingStateShard(uOffset, vOffset))
+//                        .setTransparencyState(ADDITIVE_TRANSPARENCY)
+//                        .setCullState(NO_CULL)
+//                        .createCompositeState(false)
+//        );
+//    }
+//
+//    /**
+//     * ENERGY_SWIRL_TRIANGLE_FAN - 能量漩涡效果（带偏移，扇形模式）
+//     */
+//    static RenderType energySwirlTriangleFan(ResourceLocation resourceLocation, float uOffset, float vOffset) {
+//        return RenderType.create("energy_swirl_triangle_fan", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_FAN, 1536, false, true,
+//                RenderType.CompositeState.builder()
+//                        .setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
+//                        .setTextureState(new TextureStateShard(resourceLocation, false, false))
+//                        .setTexturingState(new OffsetTexturingStateShard(uOffset, vOffset))
+//                        .setTransparencyState(ADDITIVE_TRANSPARENCY)
+//                        .setCullState(NO_CULL)
+//                        .createCompositeState(false)
+//        );
+//    }
+//
+//    /**
+//     * ENERGY_SWIRL_TRIANGLE_STRIP - 能量漩涡效果（带偏移，条带模式）
+//     */
+//    static RenderType energySwirlTriangleStrip(ResourceLocation resourceLocation, float uOffset, float vOffset) {
+//        return RenderType.create("energy_swirl_triangle_strip", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, true,
+//                RenderType.CompositeState.builder()
+//                        .setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
+//                        .setTextureState(new TextureStateShard(resourceLocation, false, false))
+//                        .setTexturingState(new OffsetTexturingStateShard(uOffset, vOffset))
+//                        .setTransparencyState(ADDITIVE_TRANSPARENCY)
+//                        .setCullState(NO_CULL)
+//                        .createCompositeState(false)
+//        );
+//    }
+
+    RenderType LINE_STRIP = RenderType.create("energy_line_strip",DefaultVertexFormat.POSITION_COLOR_NORMAL,VertexFormat.Mode.LINE_STRIP,1536,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_LINES_SHADER)
+                    .setLineState(new LineStateShard(OptionalDouble.empty()))
+                    .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                    .setOutputState(ITEM_ENTITY_TARGET)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .setCullState(NO_CULL)
+                    .createCompositeState(false)
+    );
+
+
+
+//    /**
+//     * 渲染可透明白色实体类型：将有色部分替换为白色，透明部分不动
+//     */
+//    BiFunction<ResourceLocation, Boolean, RenderType> WHITE_ENTITY_TRANSLUCENT = Util.memoize((texture, sortOnUpload) -> RenderType.create(
+//            "white_entity_translucent", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, sortOnUpload,
+//            RenderType.CompositeState.builder()
+//                    .setShaderState(new ShaderStateShard(Shaders::getWhiteEntityShader))
+//                    .setTextureState(new TextureStateShard(texture, false, false))
+//                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+//                    .setLightmapState(LIGHTMAP)
+//                    .setOverlayState(OVERLAY)
+//                    .setCullState(NO_CULL)
+//                    .createCompositeState(true)
+//    ));
+//    /**
+//     * 模型顶底偏移消散
+//     */
+//    BiFunction<ResourceLocation, Boolean, RenderType> FLY_BASIC = Util.memoize((texture, translucent) -> RenderType.create(
+//            "fly_basic", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, true,
+//            RenderType.CompositeState.builder()
+//                    .setShaderState(new ShaderStateShard(Shaders::getFlyBasicShader))
+//                    .setTextureState(new TextureStateShard(texture, false, false))
+//                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+//                    .setLightmapState(LIGHTMAP)
+//                    .setOverlayState(OVERLAY)
+//                    .setCullState(NO_CULL)
+//                    .createCompositeState(true)
+//    ));
+//
+//    /**
+//     * 从顶部开始向下，淡出（消失）
+//     * 使用了自定义的getTopFadeShader着色器，详细参数看着色器
+//     */
+//    BiFunction<ResourceLocation, Boolean, RenderType> TOP_FADE = Util.memoize((texture, translucent) -> RenderType.create(
+//            "top_fade", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, true,
+//            RenderType.CompositeState.builder()
+//                    .setShaderState(new ShaderStateShard(Shaders::getTopFadeShader))
+//                    .setTextureState(new TextureStateShard(texture, false, false))
+//                    .setTransparencyState(translucent ? TRANSLUCENT_TRANSPARENCY : NO_TRANSPARENCY)
+//                    .setLightmapState(LIGHTMAP)
+//                    .setOverlayState(OVERLAY)
+//                    .setCullState(NO_CULL)
+//                    .createCompositeState(true)
+//    ));
+}
