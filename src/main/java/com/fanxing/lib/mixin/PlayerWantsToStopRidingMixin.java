@@ -16,9 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerWantsToStopRidingMixin {
     private static final Logger log = LoggerFactory.getLogger(PlayerWantsToStopRidingMixin.class);
     @Unique
-    private long undertale$lastShiftPressTime = 0;
+    private long fxLib$lastShiftPressTime = 0;
     @Unique
-    private boolean undertale$shiftWasPressed = false;
+    private boolean fxLib$shiftWasPressed = false;
     @Unique
     private static final long DOUBLE_CLICK_TIME = 200;
 
@@ -31,15 +31,15 @@ public abstract class PlayerWantsToStopRidingMixin {
             boolean isShiftPressed = player.isShiftKeyDown();
             long now = System.currentTimeMillis();
             // 只在按键从松开变为按下时处理（上升沿触发）
-            if (isShiftPressed && !undertale$shiftWasPressed) {
-                if (now - undertale$lastShiftPressTime < DOUBLE_CLICK_TIME) {
+            if (isShiftPressed && !fxLib$shiftWasPressed) {
+                if (now - fxLib$lastShiftPressTime < DOUBLE_CLICK_TIME) {
                     // 双击！允许下车
                     cir.setReturnValue(true);
                     cir.cancel();
-                    undertale$lastShiftPressTime = 0;
+                    fxLib$lastShiftPressTime = 0;
                 } else {
                     // 单击，记录时间但不允许下车
-                    undertale$lastShiftPressTime = now;
+                    fxLib$lastShiftPressTime = now;
                     cir.setReturnValue(false);
                     cir.cancel();
                 }
@@ -49,7 +49,7 @@ public abstract class PlayerWantsToStopRidingMixin {
                 cir.cancel();
             }
             // 更新按键状态
-            undertale$shiftWasPressed = isShiftPressed;
+            fxLib$shiftWasPressed = isShiftPressed;
         }
     }
     @Inject(method = "handleEntityEvent", at = @At("HEAD"))
