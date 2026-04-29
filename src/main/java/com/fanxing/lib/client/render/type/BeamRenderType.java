@@ -1,5 +1,6 @@
 package com.fanxing.lib.client.render.type;
 
+import com.fanxing.lib.FxLib;
 import com.fanxing.lib.client.render.ResourceLocations;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -21,6 +22,7 @@ import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_BEACON_B
 import static net.minecraft.client.renderer.RenderStateShard.TRANSLUCENT_TRANSPARENCY;
 
 public interface BeamRenderType {
+    ResourceLocation FLOW_BEAM_TEXTURE = ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID,"textures/misc/flow_beam_glow.png");
 
     /**
      * 与原版beam的区别为 NO_CULL，因为这个GB炮是跟着实体渲染的，而原版的信标光束是跟着方块渲染的，顺序不一样
@@ -36,6 +38,18 @@ public interface BeamRenderType {
                     .setCullState(NO_CULL)
                     .createCompositeState(false)
     ));
+    RenderType BEAM_NO_TRANSPARENCY_WHITE = BeamRenderType.BEAM_NO_CULL.apply(ResourceLocations.WHITE_TEXTURE, false);
+    BiFunction<ResourceLocation, Boolean, RenderType> BEAM_NO_CULL_TRIANGLE = Util.memoize((texture, translucent) -> RenderType.create(
+            "beam_no_cull_triangle", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLES, 1536, false, translucent,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
+                    .setTextureState(new TextureStateShard(texture, false, false))
+                    .setTransparencyState(translucent ? TRANSLUCENT_TRANSPARENCY : NO_TRANSPARENCY)
+                    .setWriteMaskState(translucent ? COLOR_WRITE : COLOR_DEPTH_WRITE) // 透明只写颜色，不透明写颜色+深度
+                    .setCullState(NO_CULL)
+                    .createCompositeState(false)
+    ));
+    RenderType BEAM_NO_TRANSPARENCY_TRIANGLE_WHITE = BeamRenderType.BEAM_NO_CULL_TRIANGLE.apply(ResourceLocations.WHITE_TEXTURE, false);
     BiFunction<ResourceLocation, Boolean, RenderType> BEAM_NO_CULL_TRIANGLE_STRIP = Util.memoize((texture, translucent) -> RenderType.create(
             "beam_no_cull_triangle_strip", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, translucent,
             RenderType.CompositeState.builder()
@@ -46,9 +60,15 @@ public interface BeamRenderType {
                     .setCullState(NO_CULL)
                     .createCompositeState(false)
     ));
+    RenderType BEAM_NO_TRANSPARENCY_TRIANGLE_STRIP_WHITE = BeamRenderType.BEAM_NO_CULL_TRIANGLE_STRIP.apply(ResourceLocations.WHITE_TEXTURE, false);
+
+
+
+
+
 
     /**
-     * ENERGY_BEAM_FLOW - 高亮能量流动效果（带偏移）
+     * ENERGY_BEAM - 高亮能量效果（带偏移）
      * 使用信标着色器 + 加法混合 + 无光照，颜色鲜艳且不受光影影响。
      */
     Function<ResourceLocation, RenderType> ENERGY_BEAM = Util.memoize((texture) -> RenderType.create(
@@ -61,12 +81,14 @@ public interface BeamRenderType {
                     .setWriteMaskState(COLOR_WRITE)          // 不写深度
                     .createCompositeState(false)
     ));
+    RenderType ENERGY_BEAM_WHITE = ENERGY_BEAM.apply(ResourceLocations.WHITE_TEXTURE);
+    RenderType ENERGY_FLOW_BEAM_WHITE = ENERGY_BEAM.apply(FLOW_BEAM_TEXTURE);
     /**
-     * ENERGY_BEAM_FLOW_TRIANGLE_STRIP - 高亮能量流动效果（带偏移，条带模式）
+     * ENERGY_BEAM_TRIANGLE_STRIP - 高亮能量效果（带偏移，条带模式）
      * 使用信标着色器 + 加法混合 + 无光照，颜色鲜艳且不受光影影响。
      */
     Function<ResourceLocation, RenderType> ENERGY_BEAM_TRIANGLE = Util.memoize((texture) -> RenderType.create(
-            "energy_beam_triangle_strip",DefaultVertexFormat.BLOCK,VertexFormat.Mode.TRIANGLES,1536,false,false,
+            "energy_beam_triangle",DefaultVertexFormat.BLOCK,VertexFormat.Mode.TRIANGLES,1536,false,false,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
@@ -75,8 +97,11 @@ public interface BeamRenderType {
                     .setWriteMaskState(COLOR_WRITE)          // 不写深度
                     .createCompositeState(false)
     ));
+    RenderType ENERGY_BEAM_TRIANGLE_WHITE = ENERGY_BEAM_TRIANGLE.apply(ResourceLocations.WHITE_TEXTURE);
+    RenderType ENERGY_FLOW_BEAM_TRIANGLE_WHITE = ENERGY_BEAM_TRIANGLE.apply(FLOW_BEAM_TEXTURE);
+
     /**
-     * ENERGY_BEAM_FLOW_TRIANGLE_STRIP - 高亮能量流动效果（带偏移，条带模式）
+     * ENERGY_BEAM_TRIANGLE_STRIP - 高亮能量效果（带偏移，条带模式）
      * 使用信标着色器 + 加法混合 + 无光照，颜色鲜艳且不受光影影响。
      */
     Function<ResourceLocation, RenderType> ENERGY_BEAM_TRIANGLE_STRIP = Util.memoize((texture) -> RenderType.create(
@@ -89,6 +114,9 @@ public interface BeamRenderType {
                     .setWriteMaskState(COLOR_WRITE)          // 不写深度
                     .createCompositeState(false)
     ));
+
+    RenderType ENERGY_BEAM_TRIANGLE_STRIP_WHITE = ENERGY_BEAM_TRIANGLE_STRIP.apply(ResourceLocations.WHITE_TEXTURE);
+    RenderType ENERGY_FLOW_BEAM_TRIANGLE_STRIP_WHITE = ENERGY_BEAM_TRIANGLE_STRIP.apply(FLOW_BEAM_TEXTURE);
     /**
      * ENERGY_TRIANGLE_FAN
      * 能量效果 - 扇形模式
@@ -102,7 +130,11 @@ public interface BeamRenderType {
                     .setCullState(NO_CULL)
                     .createCompositeState(false)
     ));
-
-    RenderType ENERGY_BEAM_TRIANGLE_STRIP_WHITE = ENERGY_BEAM_TRIANGLE_STRIP.apply(ResourceLocations.WHITE_TEXTURE);
     RenderType ENERGY_BEAM_TRIANGLE_FAN_WHITE = ENERGY_BEAM_TRIANGLE_FAN.apply(ResourceLocations.WHITE_TEXTURE);
+
+
+
+
+
+    RenderType RAY = BeamRenderType.ENERGY_BEAM_TRIANGLE.apply(ResourceLocations.WHITE_TEXTURE);
 }

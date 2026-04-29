@@ -1,0 +1,7 @@
+package com.fanxing.lib.client.gui;
+
+public enum Placement {
+    TOP_LEFT, TOP, TOP_RIGHT,
+    LEFT, CENTER, RIGHT,
+    BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
+}

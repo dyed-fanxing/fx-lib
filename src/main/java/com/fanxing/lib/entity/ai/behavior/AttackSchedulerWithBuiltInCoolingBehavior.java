@@ -4,7 +4,7 @@ package com.fanxing.lib.entity.ai.behavior;
 import com.google.common.collect.ImmutableMap;
 import com.fanxing.lib.entity.ai.AttackNode;
 import com.fanxing.lib.net.packet.AnimPacket;
-import com.fanxing.lib.registry.MemoryModuleTypes;
+import com.fanxing.lib.registry.MemoryModuleTypesFxLib;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
@@ -48,7 +48,7 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
     }
 
     public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory, MemoryModuleType<Unit> cooldownMemory, int globalCoolDown,int postStartDelay) {
-        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypes.ATTACKING.get(), MemoryStatus.REGISTERED, MemoryModuleTypes.MOVE_LOCKING.get(), MemoryStatus.REGISTERED, cooldownMemory, MemoryStatus.VALUE_ABSENT), Integer.MAX_VALUE);
+        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypesFxLib.ATTACKING.get(), MemoryStatus.REGISTERED, MemoryModuleTypesFxLib.MOVE_LOCKING.get(), MemoryStatus.REGISTERED, cooldownMemory, MemoryStatus.VALUE_ABSENT), Integer.MAX_VALUE);
         this.nodes = nodes;
         this.dynamicFactory = dynamicFactory;
         this.cooldownMemory = cooldownMemory;
@@ -64,7 +64,7 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
     }
 
     public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory, int globalCoolDown) {
-        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypes.MOVE_LOCKING.get(), MemoryStatus.REGISTERED, MemoryModuleTypes.ATTACKING.get(), MemoryStatus.VALUE_ABSENT), Integer.MAX_VALUE);
+        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypesFxLib.MOVE_LOCKING.get(), MemoryStatus.REGISTERED, MemoryModuleTypesFxLib.ATTACKING.get(), MemoryStatus.VALUE_ABSENT), Integer.MAX_VALUE);
         this.nodes = nodes;
         this.dynamicFactory = dynamicFactory;
         this.globalCoolDown = globalCoolDown;
@@ -88,7 +88,7 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
         if (candidates.isEmpty()) return Collections.emptyList();
 
         // 2. 获取当前活跃节点集合（存储节点引用）
-        Set<AttackNode<? extends LivingEntity>> activeNodes = mob.getBrain().getMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get()).orElse(Collections.emptySet());
+        Set<AttackNode<? extends LivingEntity>> activeNodes = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(Collections.emptySet());
         if (activeNodes.isEmpty()) return candidates;
 
         // 3. 过滤：候选节点必须被所有活跃节点允许
@@ -133,15 +133,15 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
         cachedCandidates = null;
         // 加入活跃集合
         Set<AttackNode<?>> activeSet = mob.getBrain()
-                .getMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get())
+                .getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get())
                 .orElse(new HashSet<>());
         activeSet.add(currentNode);
-        mob.getBrain().setMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get(), activeSet);
+        mob.getBrain().setMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get(), activeSet);
 
         if (currentNode.isControlMove()) {
-            mob.getBrain().setMemory(MemoryModuleTypes.MOVE_LOCKING.get(), Unit.INSTANCE);
+            mob.getBrain().setMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get(), Unit.INSTANCE);
         }
-        mob.getBrain().setMemory(MemoryModuleTypes.ATTACKING.get(), Unit.INSTANCE);
+        mob.getBrain().setMemory(MemoryModuleTypesFxLib.ATTACKING.get(), Unit.INSTANCE);
         tick = 0;
         innerCooldown = 0;
         mob.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN,true,postStartDelay);
@@ -159,7 +159,7 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
             if (tick == 0) {
                 innerCooldown += currentNode.getCooldown();
                 if (currentNode.getAnimId() != null) {
-                    Set<AttackNode<?>> activeNodes = mob.getBrain().getMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get()).orElse(Collections.emptySet());
+                    Set<AttackNode<?>> activeNodes = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(Collections.emptySet());
                     int maxPriority = activeNodes.stream().mapToInt(AttackNode::getPriority).max().orElse(0);
                     if (currentNode.getPriority() >= maxPriority) {
                         PacketDistributor.sendToPlayersTrackingEntity(mob, new AnimPacket(mob.getId(), currentNode.getAnimId()));
@@ -179,13 +179,13 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
                         doStop(level, mob, gameTime);
                     } else {
                         // 移除旧节点
-                        Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
+                        Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
                         activeSet.remove(currentNode);
                         // 选择新节点（子节点）
                         currentNode = selectNodeByWeight(available, mob, target, mob.getRandom());
                         // 添加新节点
                         activeSet.add(currentNode);
-                        mob.getBrain().setMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get(), activeSet);
+                        mob.getBrain().setMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get(), activeSet);
                         tick = 0;
                     }
                     return;
@@ -210,23 +210,23 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
     protected void stop(@NotNull ServerLevel level, @NotNull T mob, long gameTime) {
         // 从活跃集合中移除当前节点
         if (currentNode != null) {
-            Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
+            Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
             int remainingMaxPriority = activeSet.stream().mapToInt(AttackNode::getPriority).max().orElse(-1);
             log.debug("Stop: activeNodes：{},maxPriority: {},currentNode.getPriority：{},current.animId：{}",activeSet,remainingMaxPriority,currentNode.getPriority(),currentNode.getAnimId());
             if (currentNode.getPriority() == remainingMaxPriority) {
                 PacketDistributor.sendToPlayersTrackingEntity(mob, new AnimPacket(mob.getId(),-1));
             }
             activeSet.remove(currentNode);
-            if (activeSet.isEmpty()) mob.getBrain().eraseMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get());
-            else mob.getBrain().setMemory(MemoryModuleTypes.ACTIVE_ATTACK_NODES.get(), activeSet);
+            if (activeSet.isEmpty()) mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get());
+            else mob.getBrain().setMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get(), activeSet);
         }
 
 
         mob.getBrain().setMemoryWithExpiry(cooldownMemory, Unit.INSTANCE, innerCooldown);
         mob.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, globalCoolDown);
 
-        mob.getBrain().eraseMemory(MemoryModuleTypes.ATTACKING.get());
-        mob.getBrain().eraseMemory(MemoryModuleTypes.MOVE_LOCKING.get());
+        mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.ATTACKING.get());
+        mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get());
 
 
         currentNode = null;

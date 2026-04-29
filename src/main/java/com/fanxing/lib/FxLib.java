@@ -1,5 +1,6 @@
 package com.fanxing.lib;
 
+import com.fanxing.lib.integration.IntegrationFx;
 import com.fanxing.lib.phys.motion.PhysicsMotionModel;
 import com.fanxing.lib.registry.*;
 import com.mojang.logging.LogUtils;
@@ -29,23 +30,28 @@ public class FxLib {
     public static final String MOD_ID = "fx_lib";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-
     // 模组类的构造函数是模组加载时运行的第一段代码
     public FxLib(IEventBus modEventBus, ModContainer modContainer) {
         // 注册commonSetup方法用于模组加载
         modEventBus.addListener(this::commonSetup);
 
 
-        BlockTypes.register(modEventBus);           // 方块注册
-        ItemTypes.register(modEventBus);            // 物品注册
-        EntityTypes.register(modEventBus);          // 实体注册
-        MobEffectTypes.registry(modEventBus);       // buff注册
-        SoundEvents.register(modEventBus);           // 声音注册
-        ParticleTypes.register(modEventBus);        // 粒子注册
-        MenuTypes.register(modEventBus);            // 菜单注册
-        AttachmentTypes.register(modEventBus);      // 附件注册
-        MemoryModuleTypes.register(modEventBus);      // 记忆注册
-        DataComponents.register(modEventBus);
+        AttributesFxLib.register(modEventBus);           // 属性注册
+        modEventBus.addListener(AttributesFxLib::onEntityAttributeModification);
+
+        BlockTypesFxLib.register(modEventBus);           // 方块注册
+        ItemTypesFxLib.register(modEventBus);            // 物品注册
+        EntityTypesFxLib.register(modEventBus);          // 实体注册
+        MobEffectTypesFxLib.registry(modEventBus);       // buff注册
+        SoundEventsFxLib.register(modEventBus);          // 声音注册
+        ParticleTypesFxLib.register(modEventBus);        // 粒子注册
+        MenuTypesFxLib.register(modEventBus);            // 菜单注册
+        AttachmentTypesFxLib.register(modEventBus);      // 附件注册
+        MemoryModuleTypesFxLib.register(modEventBus);    // 记忆注册
+        DataComponentsFxLib.register(modEventBus);
+        NumberProvidersFxLib.register(modEventBus);
+
+        IntegrationFx.register(modEventBus);               // 其他注册
 
         // 注册当前类以响应游戏事件
         NeoForge.EVENT_BUS.register(this);
@@ -54,10 +60,12 @@ public class FxLib {
         modEventBus.addListener(this::addCreative);
 
 
+
         // 注册模组的配置规范，以便FML可以创建和加载配置文件
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, ConfigFxLib.COMMON_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, ConfigFxLib.CLIENT_SPEC);
         // SERVER端配置，自动同步
-        modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, ConfigFxLib.SERVER_SPEC);
         // 客户端注册原生配置界面
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -79,7 +87,7 @@ public class FxLib {
     // 服务器启动时执行的方法
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("服务器正在启动");
+        LOGGER.debug("服务器正在启动");
     }
 
 
@@ -88,8 +96,8 @@ public class FxLib {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            LOGGER.info("客户端设置初始化");
-            LOGGER.info("MINECRAFT用户名 >> {}", Minecraft.getInstance().getUser().getName());
+            LOGGER.debug("客户端设置初始化");
+            LOGGER.debug("MINECRAFT用户名 >> {}", Minecraft.getInstance().getUser().getName());
 
         }
     }

@@ -4,7 +4,7 @@ package com.fanxing.lib.entity.ai.behavior;
 import com.google.common.collect.ImmutableMap;
 import com.fanxing.lib.entity.ai.AttackNode;
 import com.fanxing.lib.net.packet.AnimPacket;
-import com.fanxing.lib.registry.MemoryModuleTypes;
+import com.fanxing.lib.registry.MemoryModuleTypesFxLib;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
@@ -44,7 +44,7 @@ public class AttackSchedulerWithoutBuiltlnCoolingBehavior<T extends LivingEntity
     }
 
     public AttackSchedulerWithoutBuiltlnCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory) {
-        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT,MemoryModuleTypes.ATTACKING.get(), MemoryStatus.VALUE_ABSENT),Integer.MAX_VALUE);
+        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypesFxLib.ATTACKING.get(), MemoryStatus.VALUE_ABSENT),Integer.MAX_VALUE);
         this.nodes = nodes;
         this.dynamicFactory = dynamicFactory;
     }
@@ -78,7 +78,7 @@ public class AttackSchedulerWithoutBuiltlnCoolingBehavior<T extends LivingEntity
             }
             if (candidates.isEmpty()) return;
             currentNode = selectNodeByWeight(candidates, mob, target, mob.getRandom());
-            mob.getBrain().setMemory(MemoryModuleTypes.ATTACKING.get(),Unit.INSTANCE);
+            mob.getBrain().setMemory(MemoryModuleTypesFxLib.ATTACKING.get(),Unit.INSTANCE);
         });
     }
 
@@ -133,7 +133,7 @@ public class AttackSchedulerWithoutBuiltlnCoolingBehavior<T extends LivingEntity
     @Override
     protected void stop(@NotNull ServerLevel level, @NotNull T mob, long gameTime) {
         mob.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN,true,totalCooldown);
-        mob.getBrain().eraseMemory(MemoryModuleTypes.ATTACKING.get());
+        mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.ATTACKING.get());
         PacketDistributor.sendToPlayersTrackingEntity(mob, new AnimPacket(mob.getId(), (byte) -1));
         currentNode = null;
     }

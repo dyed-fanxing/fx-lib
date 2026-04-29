@@ -1,15 +1,9 @@
 package com.fanxing.lib.client;
 
-import com.fanxing.lib.FxLib;
-import com.fanxing.lib.net.packet.*;
 import com.fanxing.lib.client.particle.CustomWhiteAshNoGravityParticle;
 import com.fanxing.lib.client.particle.CustomWhiteAshParticle;
-import com.fanxing.lib.client.gui.screen.GravitySelectionScreen;
-import com.fanxing.lib.registry.MenuTypes;
-import com.fanxing.lib.registry.ParticleTypes;
-import com.zigythebird.playeranim.animation.PlayerAnimationController;
-import com.zigythebird.playeranim.api.PlayerAnimationFactory;
-import com.zigythebird.playeranimcore.enums.PlayState;
+import com.fanxing.lib.net.packet.*;
+import com.fanxing.lib.registry.ParticleTypesFxLib;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -24,7 +18,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 /**
  * 本地客户端注册绑定服务端相关的注册表标识
  */
-@EventBusSubscriber(modid = FxLib.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(value = Dist.CLIENT)
 public class Setup {
     /**
      * 监听客户端实体渲染事件
@@ -48,8 +42,8 @@ public class Setup {
      */
     @SubscribeEvent
     public static void registerParticleProviderHandler(final RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleTypes.CUSTOM_WHITE_ASH.get(), CustomWhiteAshParticle.Provider::new);
-        event.registerSpriteSet(ParticleTypes.CUSTOM_NO_GRAVITY_WHITE_ASH.get(), CustomWhiteAshNoGravityParticle.Provider::new);
+        event.registerSpriteSet(ParticleTypesFxLib.CUSTOM_WHITE_ASH.get(), CustomWhiteAshParticle.Provider::new);
+        event.registerSpriteSet(ParticleTypesFxLib.CUSTOM_NO_GRAVITY_WHITE_ASH.get(), CustomWhiteAshNoGravityParticle.Provider::new);
     }
 
     /**
@@ -74,11 +68,11 @@ public class Setup {
         registrar.playToClient(WarningTipPacket.CurveStrip.TYPE, WarningTipPacket.CurveStrip.STREAM_CODEC, WarningTipPacket.CurveStrip::handle);
         registrar.playToClient(WarningTipPacket.RadialPrecessionCurveStripsPacket.TYPE, WarningTipPacket.RadialPrecessionCurveStripsPacket.STREAM_CODEC, WarningTipPacket.RadialPrecessionCurveStripsPacket::handle);
         registrar.playToClient(WarningTipPacket.RadialPrecessionCurveStripsGravityPacket.TYPE, WarningTipPacket.RadialPrecessionCurveStripsGravityPacket.STREAM_CODEC, WarningTipPacket.RadialPrecessionCurveStripsGravityPacket::handle);
-
-
         registrar.playToClient(SyncMotionPayload.TYPE,SyncMotionPayload.STREAM_CODEC, SyncMotionPayload::handle);
 
-        registrar.playToServer(GravitySelectionPacket.TYPE,GravitySelectionPacket.STREAM_CODEC, GravitySelectionPacket::handle);
+        registrar.playToServer(ColorSchemePacket.TYPE,ColorSchemePacket.STREAM_CODEC, ColorSchemePacket::handle);
+        registrar.playToServer(ColorPalettesPacket.TYPE,ColorPalettesPacket.STREAM_CODEC, ColorPalettesPacket::handle);
+        registrar.playToServer(StopUsingPacket.TYPE, StopUsingPacket.STREAM_CODEC, StopUsingPacket::handle);
     }
 
     /**
@@ -86,19 +80,11 @@ public class Setup {
      */
     @SubscribeEvent
     public static void onRegisterMenuScreens(final RegisterMenuScreensEvent event) {
-        event.register(MenuTypes.GRAVITY_SELECTION_MENU.get(), GravitySelectionScreen::new);
     }
 
-    /**
-     * PLA API的注册玩家动画控制器，类似gecklib的动画控制器
-     */
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            // 注册动画层。1000 是优先级，你可以根据需要调整（文档建议重要动画用 1500+）
-            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(PlayerAnimations.ATTACK, 1500,
-                    player -> new PlayerAnimationController(player,(controller, state, animSetter) -> PlayState.STOP)
-            );
         });
     }
 }

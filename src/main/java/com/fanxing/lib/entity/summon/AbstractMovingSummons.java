@@ -1,8 +1,8 @@
 package com.fanxing.lib.entity.summon;
 
-import com.fanxing.lib.utils.collsion.RayCCDUtils;
-import com.fanxing.lib.utils.RotUtils;
-import com.fanxing.lib.utils.collsion.TimeOfImpactUtils;
+import com.fanxing.lib.util.collsion.RayCCDUtils;
+import com.fanxing.lib.util.RotUtils;
+import com.fanxing.lib.util.collsion.TimeOfImpactUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;

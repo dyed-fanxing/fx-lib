@@ -4,5 +4,15 @@
   "fx_lib.debug.ccd.on": "CCD Debug: ON",
   "fx_lib.debug.ccd.off": "CCD Debug: OFF",
   "config.fx_lib.general.segments": "circle segments",
-  "gui.fx_lib.close": "关闭"
+  "gui.fx_lib.preset": "preset",
+  "gui.fx_lib.add": "add",
+  "gui.fx_lib.color_picker": "color picker",
+  "gui.fx_lib.color_scheme": "color scheme",
+  "gui.fx_lib.follow": "follow",
+  "gui.fx_lib.rotation": "rotation",
+  "gui.fx_lib.drag": "drag",
+  "gui.fx_lib.look_at": "look at",
+  "gui.fx_lib.mouse": "mouse",
+  "attribute.name.fx_lib.generic.target_invulnerability_ticks": "target invulnerability time",
+  "attribute.name.fx_lib.generic.self_invulnerability_ticks": "self invulnerability time"
 }

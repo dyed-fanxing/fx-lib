@@ -4,5 +4,15 @@
   "fx_lib.debug.ccd.on": "CCD扫掠: 显示",
   "fx_lib.debug.ccd.off": "CCD扫掠: 关闭",
   "config.fx_lib.general.segments": "圆段数",
-  "gui.fx_lib.close": "关闭"
+  "gui.fx_lib.preset": "预设",
+  "gui.fx_lib.add": "添加",
+  "gui.fx_lib.color_picker": "调色板",
+  "gui.fx_lib.color_scheme": "颜色方案",
+  "gui.fx_lib.follow": "跟随",
+  "gui.fx_lib.rotation": "旋转",
+  "gui.fx_lib.drag": "拖拽",
+  "gui.fx_lib.look_at": "看向",
+  "gui.fx_lib.mouse": "鼠标",
+  "attribute.name.fx_lib.generic.target_invulnerability_ticks": "目标无敌时间",
+  "attribute.name.fx_lib.generic.self_invulnerability_ticks": "自身无敌时间"
 }

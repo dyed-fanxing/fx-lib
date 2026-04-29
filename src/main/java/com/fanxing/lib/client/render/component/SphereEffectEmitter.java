@@ -1,7 +1,7 @@
 package com.fanxing.lib.client.render.component;
 
 import com.fanxing.lib.client.render.shape.CircleRenderer;
-import com.fanxing.lib.utils.RotUtils;
+import com.fanxing.lib.util.RotUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;

@@ -1,6 +1,7 @@
 package com.fanxing.lib.entity.projectile;
 
-import com.fanxing.lib.utils.collsion.RayCCDUtils;
+import com.fanxing.lib.registry.ParticleTypesFxLib;
+import com.fanxing.lib.util.collsion.RayCCDUtils;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -135,7 +136,7 @@ public abstract class AbstractPenetrableProjectile extends Projectile implements
         }
     }
     protected ParticleOptions getTrailParticle() {
-        return com.fanxing.lib.registry.ParticleTypes.CUSTOM_WHITE_ASH.get();
+        return ParticleTypesFxLib.CUSTOM_WHITE_ASH.get();
     }
 
     @Override

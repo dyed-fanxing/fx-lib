@@ -1,7 +1,7 @@
 package com.fanxing.lib.worldgen.processor;
 
-import com.fanxing.lib.registry.StructureProcessorTypes;
-import com.fanxing.lib.utils.NbtUtils;
+import com.fanxing.lib.registry.StructureProcessorTypesFxLib;
+import com.fanxing.lib.util.NbtUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,7 +30,7 @@ public class OriginWakeProcessor extends StructureProcessor {
     public static final MapCodec<OriginWakeProcessor> CODEC = MapCodec.unit(OriginWakeProcessor::new);
 
     @Override
-    protected @NotNull StructureProcessorType<?> getType() { return StructureProcessorTypes.ORIGIN_WAKE_SPAWNER.get();}
+    protected @NotNull StructureProcessorType<?> getType() { return StructureProcessorTypesFxLib.ORIGIN_WAKE_SPAWNER.get();}
 
     @Override
     public StructureTemplate.@NotNull StructureEntityInfo processEntity(@NotNull LevelReader world, @NotNull BlockPos seedPos,

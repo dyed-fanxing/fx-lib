@@ -1,6 +1,6 @@
 package com.fanxing.lib.entity.ai.behavior;
 
-import com.fanxing.lib.registry.MemoryModuleTypes;
+import com.fanxing.lib.registry.MemoryModuleTypesFxLib;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
@@ -78,7 +78,7 @@ public class StopAndSwitchTargetIfTargetInvalidAndSelfNoAttacking {
         return BehaviorBuilder.create(instance -> instance.group(
                 instance.present(MemoryModuleType.ATTACK_TARGET),
                 instance.registered(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE),
-                instance.registered(MemoryModuleTypes.ATTACKING.get())
+                instance.registered(MemoryModuleTypesFxLib.ATTACKING.get())
         ).apply(instance, (attackTarget, cantReach, attacking) -> (level, mob, gameTime) -> {
             // 1. 检查前置条件
             if (!shouldRun.test(mob)) {
@@ -93,10 +93,6 @@ public class StopAndSwitchTargetIfTargetInvalidAndSelfNoAttacking {
                 if(checkTired && tiredSince.isPresent() && level.getGameTime()-tiredSince.get() > TIMEOUT){
                     onTimeout.accept(mob,target);
                 }else{
-                    //TODO
-                    //KEY 这里有问题！！！，这里不应该一直应用目标有效的回调，
-                    // 因为Sans有效方法会一直给目标上重力标签，导致开场杀目标有时候不需要重力会被覆盖掉
-                    // 但是我之所以写了这个，是因为有时候会丢失目标仇恨导致，无法执行攻击，这个得再测测
 //                    onAttackTarget.accept(mob,target);
                     return true;
                 }

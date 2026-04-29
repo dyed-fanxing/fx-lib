@@ -128,6 +128,7 @@ public class Lightning {
         float halfW = width / 2f;
         int n = points.size();
 
+        // 计算左右边界和中点
         Vec3[] lefts = new Vec3[n];
         Vec3[] centers = new Vec3[n];
         Vec3[] rights = new Vec3[n];
@@ -144,16 +145,18 @@ public class Lightning {
             centers[i] = p;
             rights[i] = p.add(right.scale(halfW));
         }
-
-        // 正向：左半条带
-        for (int i = 0; i < n; i++) {
-            addVertex(consumer, pose, lefts[i], coreColor);
+        int i;
+        // 左半条带：左边缘 -> 中心
+        for (i = 0; i < n; i++) {
+            addVertex(consumer, pose, lefts[i], edgeColor);
             addVertex(consumer, pose, centers[i], coreColor);
         }
-        // 反向：右半条带
-        for (int i = n - 1; i >= 0; i--) {
+        i--;
+        addVertex(consumer, pose, rights[i], edgeColor);
+        // 右半条带：中心 -> 右边缘
+        for (; i >=0; i--) {
+            addVertex(consumer, pose, centers[i], coreColor);
             addVertex(consumer, pose, rights[i], edgeColor);
-            addVertex(consumer, pose, centers[i], edgeColor);
         }
     }
 

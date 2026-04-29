@@ -1,6 +1,6 @@
 package com.fanxing.lib.entity.ai.behavior;
 
-import com.fanxing.lib.registry.MemoryModuleTypes;
+import com.fanxing.lib.registry.MemoryModuleTypesFxLib;
 import com.google.common.collect.ImmutableMap;
 import com.fanxing.lib.entity.ai.tracker.IgnoringSensorEntityTracker;
 import net.minecraft.core.BlockPos;
@@ -57,7 +57,7 @@ public class SpellCastingMoveInFollowRange<T extends Mob> extends Behavior<T> {
 
     @Override
     protected boolean checkExtraStartConditions(@NotNull ServerLevel level, @NotNull T mob) {
-        return mob.getBrain().getMemory(MemoryModuleTypes.MOVE_LOCKING.get()).isEmpty();
+        return mob.getBrain().getMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get()).isEmpty();
     }
 
     @Override

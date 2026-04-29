@@ -4,12 +4,12 @@ import com.fanxing.lib.client.render.shape.CircleRenderer;
 import com.fanxing.lib.client.render.shape.CubeRenderer;
 import com.fanxing.lib.client.render.shape.CylinderRenderer;
 import com.fanxing.lib.client.render.shape.QuadRenderer;
-import com.fanxing.lib.utils.CurvesUtils;
+import com.fanxing.lib.util.CurvesUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.fanxing.lib.Config;
+import com.fanxing.lib.ConfigFxLib;
 import com.fanxing.lib.client.render.type.RenderTypes;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LightTexture;
@@ -100,7 +100,7 @@ public abstract class WarningTip extends Effect {
 
             VertexConsumer sideConsumer = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP_WHITE);
             VertexConsumer capConsumer = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_WHITE);
-            CylinderRenderer.render(poseStack.last(), sideConsumer, capConsumer,new Vector3f(),radius, height, Config.COMMON.segments.getAsInt(), r, g, b, getAlpha(partialTick),
+            CylinderRenderer.render(poseStack.last(), sideConsumer, capConsumer,new Vector3f(),radius, height, ConfigFxLib.Client.SEGMENTS.getAsInt(), r, g, b, getAlpha(partialTick),
                     OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
             poseStack.popPose();
         }
@@ -297,7 +297,7 @@ public abstract class WarningTip extends Effect {
                 double angleRight = Math.atan2(rightFront.z - center.z, rightFront.x - center.x);
                 double angleLeft  = Math.atan2(leftFront.z - center.z, leftFront.x - center.x);
                 if (angleLeft < angleRight) angleLeft += 2 * Math.PI;
-                int segments = Config.COMMON.getSegments().getAsInt();
+                int segments = ConfigFxLib.Client.SEGMENTS.getAsInt();
                 // 生成圆弧上的细分点（不包括右前角和左前角，因为已经单独添加）
                 for (int i = 1; i < segments; i++) {
                     double t = (double) i / segments;
