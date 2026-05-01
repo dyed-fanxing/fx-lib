@@ -48,7 +48,7 @@ public abstract class AbstractMovingSummons extends Summons {
             this.setPos(this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z);
         }
     }
-    void updateRotation(Vec3 velocity) {
+    protected void updateRotation(Vec3 velocity) {
         RotUtils.lookVec(this, velocity);
     }
     protected BlockHitResult getBlockHitResult() {

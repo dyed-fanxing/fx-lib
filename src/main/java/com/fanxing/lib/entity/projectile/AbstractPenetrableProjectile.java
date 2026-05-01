@@ -146,8 +146,11 @@ public abstract class AbstractPenetrableProjectile extends Projectile implements
             d0 = 4.0F;
         }
 
-        d0 *= 64.0F;
+        d0 *= getViewDist();
         return r < d0 * d0;
+    }
+    public double getViewDist(){
+        return 64f;
     }
 
     /**
