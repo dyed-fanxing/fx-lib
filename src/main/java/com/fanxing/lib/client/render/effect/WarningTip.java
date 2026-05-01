@@ -275,8 +275,8 @@ public abstract class WarningTip extends Effect {
                         halfWidth, 0, rectLen,
                         halfWidth, 0, 0,
                         0,1,0, 0,1,0, 0,1,0, 0,1,0,
-                        0,0, 1,0, 1,1, 0,1,
-                        r, g, b, alpha, OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
+                        r, g, b, alpha, OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY,
+                        0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f);
             }
             // 填充区域（三角形 + 扇形）
             if (circleVisible) {
