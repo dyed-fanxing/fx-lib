@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -28,7 +27,7 @@ import java.util.function.Consumer;
  * - 可继承重写 {@link #afterRender(GuiGraphics, float)} (GuiGraphics, float)} 额外渲染。
  * - 惯性基于 {@link DeltaTracker}，与游戏引擎同步。
  */
-public class EntityPreview<T extends Entity> extends AbstractWidget{
+public class EntityPreview<T extends Entity> extends AbstractWidget {
     public static final float INERTIA_DAMPING_PER_SEC = 0.95f;
     public static final float INERTIA_MIN_SPEED = 0.01F;
     public static final float MAX_ZOOM = 200F;
@@ -58,7 +57,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
     public EntityPreview(int x, int y, int width, int height, T entity) {
         super(x, y, width, height, Component.empty());
         this.entity = entity;
-        int btnWidth = width/4;
+        int btnWidth = width / 4;
         modeToggle = new ToggleButton(btnWidth, false,
                 Component.translatable("gui.fx_lib.follow"), Component.translatable("gui.fx_lib.rotation"),
                 Component.translatable("gui.fx_lib.look_at").append(Component.translatable("gui.fx_lib.mouse")),
@@ -70,7 +69,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
                         p45Button.visible = true;
                         n45Button.visible = true;
                         resetButton.visible = true;
-                    }else{
+                    } else {
                         p45Button.visible = false;
                         n45Button.visible = false;
                         resetButton.visible = false;
@@ -78,7 +77,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
                     setPosition(getX(), getY());
                 }
         );
-        int btn45Width = btnWidth/2-5;
+        int btn45Width = btnWidth / 2 - 5;
         // -45度按钮
         n45Button = Button.builder(Component.literal("-45"), btn -> yaw -= (float) Math.toRadians(45))
                 .width(btn45Width).build();
@@ -88,7 +87,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
                 .width(btn45Width).build();
         p45Button.visible = false;
         // 重置按钮
-        resetButton = Button.builder(Component.translatable("controls.reset"), btn -> yaw = pitch = velYaw = velPitch = transX = transY = 0 )
+        resetButton = Button.builder(Component.translatable("controls.reset"), btn -> yaw = pitch = velYaw = velPitch = transX = transY = 0)
                 .width(btnWidth).build();
         resetButton.visible = false;
     }
@@ -115,6 +114,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
             modeToggle.setX(startX);
         }
     }
+
     @Override
     public void setY(int y) {
         super.setY(y);
@@ -134,7 +134,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
     @Override
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (modeToggle.getState()) {
-            if(!dragging){
+            if (!dragging) {
                 DeltaTracker deltaTracker = Minecraft.getInstance().getTimer();
                 float delta = deltaTracker.getGameTimeDeltaTicks();
                 if (Math.abs(velYaw) > INERTIA_MIN_SPEED) {
@@ -208,17 +208,17 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
         float yRot = entity.getYRot();
         float xRot = entity.getXRot();
         Quaternionf finalRot = new Quaternionf()
-                .rotateY(yaw  * Mth.DEG_TO_RAD)
-                .rotateX(pitch  * Mth.DEG_TO_RAD);
+                .rotateY(yaw * Mth.DEG_TO_RAD)
+                .rotateX(pitch * Mth.DEG_TO_RAD);
         Vector3f offset = new Vector3f(0.0F, entity.getBbHeight() / 2.0F + yOffset, 0.0F);
-        renderEntity(graphics, centerX, centerY, size, offset, finalRot,null, partialTick);
+        renderEntity(graphics, centerX, centerY, size, offset, finalRot, null, partialTick);
         entity.setYRot(yRot);
         entity.setXRot(xRot);
     }
 
     protected void renderDragRotation(GuiGraphics graphics, int left, int top, int right, int bottom, int size, float yOffset, float partialTick) {
-        float centerX = (left + right) / 2.0F ;
-        float centerY = (top + bottom) / 2.0F ;
+        float centerX = (left + right) / 2.0F;
+        float centerY = (top + bottom) / 2.0F;
 
         float oldYRot = entity.getYRot();
         float oldXRot = entity.getXRot();
@@ -232,7 +232,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
         float scale = 1.0F;
         Vector3f offset = new Vector3f(0.0F, entity.getBbHeight() / 2.0F + yOffset * scale, 0.0F);
         float scaledSize = size / scale;
-        renderEntity(graphics, centerX, centerY, scaledSize, offset, finalRot,null, partialTick);
+        renderEntity(graphics, centerX, centerY, scaledSize, offset, finalRot, null, partialTick);
 
         entity.setYRot(oldYRot);
         entity.setXRot(oldXRot);
@@ -241,7 +241,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
     // ==================== 实例渲染（含钩子） ====================
     protected void renderEntity(GuiGraphics graphics, float centerX, float centerY, float scale, Vector3f offset, Quaternionf rotation, @Nullable Quaternionf cameraOrientation, float partialTick) {
         graphics.pose().pushPose();
-        graphics.pose().translate(centerX+ transX, centerY+transY, 50.0F);
+        graphics.pose().translate(centerX + transX, centerY + transY, 50.0F);
         graphics.pose().scale(scale, scale, scale);
         graphics.pose().translate(offset.x, offset.y, offset.z);
         graphics.pose().mulPose(rotation);
@@ -254,7 +254,7 @@ public class EntityPreview<T extends Entity> extends AbstractWidget{
         dispatcher.setRenderShadow(false);
         RenderSystem.runAsFancy(() -> {
             dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880);
-            afterRender(graphics,partialTick);
+            afterRender(graphics, partialTick);
         });
         graphics.flush();
         dispatcher.setRenderShadow(true);

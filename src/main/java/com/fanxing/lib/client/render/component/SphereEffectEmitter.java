@@ -54,7 +54,7 @@ public class SphereEffectEmitter {
         nextIndex = 0;
     }
 
-    public void stretchCircleRender(PoseStack poseStack, VertexConsumer consumer, float animTick,float radius, float innerRadius, int[] color) {
+    public void stretchCircleRender(PoseStack poseStack, VertexConsumer consumer, float animTick,float radius, float innerRadius, int color) {
         while (true) {
             float startTime = nextIndex * density / radius;
             if (startTime > animTick) break;
@@ -98,7 +98,7 @@ public class SphereEffectEmitter {
             poseStack.mulPose(RotUtils.rotation(new Vec3(0, 0, 1), ef.direction));
             poseStack.scale(currentWidth, currentWidth, stretch);
             CircleRenderer.render(poseStack.last(), consumer, new Vector3f(0, 0, -0.5f), 1.0f, 16, new Vector3f(0, 0, 1),
-                    color[0], color[1], color[2], color[3], OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT);
+                    color, OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
         }
     }

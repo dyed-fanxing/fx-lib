@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 /**
  * 活体实体预览组件。
  */
-public class LivingEntityPreview<T extends LivingEntity> extends EntityPreview<LivingEntity> {
+public class LivingEntityPreview<T extends LivingEntity> extends EntityPreview<T> {
 
     public LivingEntityPreview(int x, int y, int width, int height, T entity) {
         super(x, y, width, height, entity);
@@ -36,7 +36,7 @@ public class LivingEntityPreview<T extends LivingEntity> extends EntityPreview<L
         float scale = entity.getScale();
         Vector3f offset = new Vector3f(0.0F, entity.getBbHeight() / 2.0F + yOffset * scale, 0.0F);
         float scaledSize = size / scale;
-        renderEntity(graphics, centerX, centerY, scaledSize, offset, finalRot,null, partialTick);
+        renderEntity(graphics, centerX, centerY, scaledSize, offset, finalRot, null, partialTick);
 
         entity.yBodyRot = yBodyRot;
         entity.setYRot(yRot);
@@ -69,7 +69,7 @@ public class LivingEntityPreview<T extends LivingEntity> extends EntityPreview<L
         float scale = entity.getScale();
         Vector3f offset = new Vector3f(0.0F, entity.getBbHeight() / 2.0F + yOffset * scale, 0.0F);
         float scaledSize = size / scale;
-        renderEntity(graphics, centerX, centerY, scaledSize, offset, finalRot,null, partialTick);
+        renderEntity(graphics, centerX, centerY, scaledSize, offset, finalRot, null, partialTick);
 
         entity.setYRot(oldYRot);
         entity.setXRot(oldXRot);
