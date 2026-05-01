@@ -2,6 +2,8 @@ package com.fanxing.lib.client.render.shape;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
@@ -11,21 +13,24 @@ public class CylinderRenderer {
     /**
      * 圆柱体：竖向，UV缩放、偏移
      *
-     * @param pose         姿态
-     * @param sideConsumer 侧面渲染器（TRIANGLE_STRIP）
-     * @param capConsumer  顶底面渲染器（TRIANGLE）
-     * @param start        起点，底部中心点
-     * @param radius       半径
-     * @param height       高度
-     * @param segments     分段数
-     * @param uScale       UV横向缩放
-     * @param vScale       UV纵向缩放
-     * @param uOffset      U方向偏移
-     * @param vOffset      V方向偏移
+     * @param pose           姿态
+     * @param bufferSource   缓冲源
+     * @param sideRenderType 侧面渲染器（TRIANGLE_STRIP）
+     * @param capRenderType  顶底面渲染器（TRIANGLE）
+     * @param start          起点，底部中心点
+     * @param radius         半径
+     * @param height         高度
+     * @param segments       分段数
+     * @param uScale         UV横向缩放
+     * @param vScale         UV纵向缩放
+     * @param uOffset        U方向偏移
+     * @param vOffset        V方向偏移
      */
-    public static void render(PoseStack.Pose pose, VertexConsumer sideConsumer, VertexConsumer capConsumer, Vector3f start, float radius, float height, int segments,
+    public static void render(PoseStack.Pose pose, MultiBufferSource bufferSource, RenderType sideRenderType, RenderType capRenderType, Vector3f start, float radius, float height, int segments,
                               int r, int g, int b, int a, int overlay, int light, float uScale, float vScale, float uOffset, float vOffset) {
-        renderSide(pose, sideConsumer, start, radius, height, segments, r, g, b, a, overlay, light, uScale, vScale, uOffset, vOffset);
+        VertexConsumer sideConsumer = bufferSource.getBuffer(sideRenderType);
+        renderSideStrip(pose, sideConsumer, start, radius, height, segments, r, g, b, a, overlay, light, uScale, vScale, uOffset, vOffset);
+        VertexConsumer capConsumer = bufferSource.getBuffer(capRenderType);
         // 底面圆盘，法线向下
         CircleRenderer.render(pose, capConsumer, start, radius, segments, new Vector3f(0, -1, 0),
                 r, g, b, a, overlay, light, uScale, vScale);
@@ -38,38 +43,38 @@ public class CylinderRenderer {
     /**
      * 圆柱体：UV缩放（无偏移）
      */
-    public static void render(PoseStack.Pose pose, VertexConsumer sideConsumer, VertexConsumer capConsumer, Vector3f start, float radius, float height, int segments,
+    public static void render(PoseStack.Pose pose, MultiBufferSource bufferSource, RenderType sideRenderType, RenderType capRenderType, Vector3f start, float radius, float height, int segments,
                               int r, int g, int b, int a, int overlay, int light, float uScale, float vScale) {
-        render(pose, sideConsumer, capConsumer, start, radius, height, segments, r, g, b, a, overlay, light, uScale, vScale, 0f, 0f);
+        render(pose, bufferSource, sideRenderType, capRenderType, start, radius, height, segments, r, g, b, a, overlay, light, uScale, vScale, 0f, 0f);
     }
 
     /**
      * 圆柱体：默认 UV 缩放和偏移
      */
-    public static void render(PoseStack.Pose pose, VertexConsumer sideConsumer, VertexConsumer capConsumer, Vector3f start, float radius, float height, int segments,
+    public static void render(PoseStack.Pose pose, MultiBufferSource bufferSource, RenderType sideRenderType, RenderType capRenderType, Vector3f start, float radius, float height, int segments,
                               int r, int g, int b, int a, int overlay, int light) {
-        render(pose, sideConsumer, capConsumer, start, radius, height, segments, r, g, b, a, overlay, light, 1f, 1f, 0f, 0f);
+        render(pose, bufferSource, sideRenderType, capRenderType, start, radius, height, segments, r, g, b, a, overlay, light, 1f, 1f, 0f, 0f);
     }
 
     /**
      * 圆柱侧面：使用四边形模式（QUADS），通过 QuadRenderer.render 渲染每个四边形段
      * KEY 虽然条带渲染顶点更少，GPU性能更高，但是无法复用，每一个都要获取新的RenderType
-     *  在图形顶点数量相对较少，而图形数量多的时候，反复的创建RenderType和获取新的bufferSource，会导致CPU开销变大
-     *  而使用可复用的图元，CPU使用缓存，开销很小，而由于顶点数量相对不是很多，所以综合性能更好
+     * 在图形顶点数量相对较少，而图形数量多的时候，反复的创建RenderType和获取新的bufferSource，会导致CPU开销变大
+     * 而使用可复用的图元，CPU使用缓存，开销很小，而由于顶点数量相对不是很多，所以综合性能更好
      *
-     * @param pose         姿态矩阵
-     * @param consumer     顶点消费者（需支持 QUADS 模式）
-     * @param start        底部中心点
-     * @param radius       半径
-     * @param height       高度
-     * @param segments     分段数（四边形数量）
-     * @param r,g,b,a      颜色
-     * @param overlay      叠加纹理
-     * @param light        光照
-     * @param uScale       U方向缩放
-     * @param vScale       V方向缩放
-     * @param uOffset      U方向偏移
-     * @param vOffset      V方向偏移
+     * @param pose     姿态矩阵
+     * @param consumer 顶点消费者（需支持 QUADS 模式）
+     * @param start    底部中心点
+     * @param radius   半径
+     * @param height   高度
+     * @param segments 分段数（四边形数量）
+     * @param r,g,b,a  颜色
+     * @param overlay  叠加纹理
+     * @param light    光照
+     * @param uScale   U方向缩放
+     * @param vScale   V方向缩放
+     * @param uOffset  U方向偏移
+     * @param vOffset  V方向偏移
      */
     public static void renderSide(PoseStack.Pose pose, VertexConsumer consumer,
                                   Vector3f start, float radius, float height, int segments,
@@ -101,8 +106,8 @@ public class CylinderRenderer {
             float vTop = vScale + vOffset;
             QuadRenderer.render(pose, consumer,
                     x1, yBottom, z1,   // 底部左
-                    x1, yTop,    z1,   // 顶部左
-                    x2, yTop,    z2,   // 顶部右
+                    x1, yTop, z1,   // 顶部左
+                    x2, yTop, z2,   // 顶部右
                     x2, yBottom, z2,   // 底部右
                     nx1, ny, nz1,      // 底部左法线
                     nx1, ny, nz1,      // 顶部左法线
@@ -112,15 +117,16 @@ public class CylinderRenderer {
                     u1, vBottom, u1, vTop, u2, vTop, u2, vBottom);
         }
     }
+
     /**
      * 圆柱侧面：竖向，UV缩放、偏移、条带渲染
      * KEY 无法重复使用同一个bufferSource获取的同一个RenderType去提交顶点，否则会报not building
-     *  根本原因是 STRIP图元不能连续添加顶点，FAN同理
-     *  TRIANGLE_STRIP(5, 3, 1, true),
-     *  TRIANGLE_FAN(6, 3, 1, true),
+     * 根本原因是 STRIP图元不能连续添加顶点，FAN同理
+     * TRIANGLE_STRIP(5, 3, 1, true),
+     * TRIANGLE_FAN(6, 3, 1, true),
      */
     public static void renderSideStrip(PoseStack.Pose pose, VertexConsumer consumer, Vector3f start, float radius, float height, int segments,
-                                  int r, int g, int b, int a, int overlay, int light, float uScale, float vScale, float uOffset, float vOffset) {
+                                       int r, int g, int b, int a, int overlay, int light, float uScale, float vScale, float uOffset, float vOffset) {
         float step = Mth.TWO_PI / segments;
         Matrix4f matrix = pose.pose();
         float vBottomBase = 0f;
@@ -186,28 +192,25 @@ public class CylinderRenderer {
     }
 
 
-
-
     // ==================== ARGB 重载 ====================
 
-    public static void render(PoseStack.Pose pose, VertexConsumer sideConsumer, VertexConsumer capConsumer,
+    public static void render(PoseStack.Pose pose, MultiBufferSource bufferSource, RenderType sideRenderType, RenderType capRenderType,
                               Vector3f start, float radius, float height, int segments,
-                              int argb, int overlay, int light,
-                              float uScale, float vScale, float uOffset, float vOffset) {
-        render(pose, sideConsumer, capConsumer, start, radius, height, segments,
+                              int argb, int overlay, int light, float uScale, float vScale, float uOffset, float vOffset) {
+        render(pose, bufferSource, sideRenderType, capRenderType, start, radius, height, segments,
                 FastColor.ARGB32.red(argb), FastColor.ARGB32.green(argb), FastColor.ARGB32.blue(argb), FastColor.ARGB32.alpha(argb), overlay, light, uScale, vScale, uOffset, vOffset);
     }
 
-    public static void render(PoseStack.Pose pose, VertexConsumer sideConsumer, VertexConsumer capConsumer,
+    public static void render(PoseStack.Pose pose, MultiBufferSource bufferSource, RenderType sideRenderType, RenderType capRenderType,
                               Vector3f start, float radius, float height, int segments,
                               int argb, int overlay, int light, float uScale, float vScale) {
-        render(pose, sideConsumer, capConsumer, start, radius, height, segments, argb, overlay, light, uScale, vScale, 0f, 0f);
+        render(pose, bufferSource, sideRenderType, capRenderType, start, radius, height, segments, argb, overlay, light, uScale, vScale, 0f, 0f);
     }
 
-    public static void render(PoseStack.Pose pose, VertexConsumer sideConsumer, VertexConsumer capConsumer,
+    public static void render(PoseStack.Pose pose, MultiBufferSource bufferSource, RenderType sideRenderType, RenderType capRenderType,
                               Vector3f start, float radius, float height, int segments,
                               int argb, int overlay, int light) {
-        render(pose, sideConsumer, capConsumer, start, radius, height, segments, argb, overlay, light, 1f, 1f, 0f, 0f);
+        render(pose, bufferSource, sideRenderType, capRenderType, start, radius, height, segments, argb, overlay, light, 1f, 1f, 0f, 0f);
     }
 
     public static void renderSide(PoseStack.Pose pose, VertexConsumer consumer, Vector3f start,

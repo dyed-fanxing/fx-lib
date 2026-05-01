@@ -48,8 +48,9 @@ public class FxLib {
         MenuTypesFxLib.register(modEventBus);            // 菜单注册
         AttachmentTypesFxLib.register(modEventBus);      // 附件注册
         MemoryModuleTypesFxLib.register(modEventBus);    // 记忆注册
-        DataComponentsFxLib.register(modEventBus);
-        NumberProvidersFxLib.register(modEventBus);
+        DataComponentsFxLib.register(modEventBus);       // 数据组件注册
+        NumberProvidersFxLib.register(modEventBus);      // 数字提供者注册
+        StructureProcessorTypesFxLib.register(modEventBus); // 结构后处理器注册
 
         IntegrationFx.register(modEventBus);               // 其他注册
 
@@ -70,7 +71,7 @@ public class FxLib {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
-        PhysicsMotionModel.init();
+        PhysicsMotionModel.registry();
 
     }
 

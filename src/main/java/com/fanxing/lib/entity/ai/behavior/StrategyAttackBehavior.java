@@ -25,28 +25,28 @@ import java.util.function.BiFunction;
 /**
  * 单个攻击组的调度行为。负责从组内选择节点并执行，管理派生，无内置CD，使用默认原版的CD
  */
-public class AttackSchedulerWithoutBuiltlnCoolingBehavior<T extends LivingEntity> extends Behavior<T> {
-    private static final Logger log = LoggerFactory.getLogger(AttackSchedulerWithoutBuiltlnCoolingBehavior.class);
+public class StrategyAttackBehavior<T extends LivingEntity> extends Behavior<T> {
+    private static final Logger log = LoggerFactory.getLogger(StrategyAttackBehavior.class);
     protected final List<AttackNode<T>> nodes;                          // 静态节点列表
     protected final BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory;    // 动态节点列表
     protected AttackNode<T> currentNode;                                // 当前节点
     protected int tick;                                                 // 计数器
     protected List<AttackNode<T>> cachedCandidates;
     protected int timeout;
-    public AttackSchedulerWithoutBuiltlnCoolingBehavior(AttackNode<T> node) {
+    public StrategyAttackBehavior(AttackNode<T> node) {
         this(node, (a,t) -> List.of());
     }
-    public AttackSchedulerWithoutBuiltlnCoolingBehavior(BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory) {
+    public StrategyAttackBehavior(BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory) {
         this(List.of(), dynamicFactory,2000);
     }
-    public AttackSchedulerWithoutBuiltlnCoolingBehavior(AttackNode<T> node, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory) {
+    public StrategyAttackBehavior(AttackNode<T> node, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory) {
         this(List.of(node), dynamicFactory,2000);
     }
-    public AttackSchedulerWithoutBuiltlnCoolingBehavior(AttackNode<T> node, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory,int timeout) {
+    public StrategyAttackBehavior(AttackNode<T> node, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory, int timeout) {
         this(List.of(node), dynamicFactory,timeout);
     }
-    public AttackSchedulerWithoutBuiltlnCoolingBehavior(List<AttackNode<T>> nodes, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory,int timeout) {
-        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypesFxLib.ATTACKING.get(), MemoryStatus.VALUE_ABSENT),Integer.MAX_VALUE);
+    public StrategyAttackBehavior(List<AttackNode<T>> nodes, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory, int timeout) {
+        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT),Integer.MAX_VALUE);
         this.nodes = nodes;
         this.dynamicFactory = dynamicFactory;
         this.timeout = timeout;
@@ -67,25 +67,7 @@ public class AttackSchedulerWithoutBuiltlnCoolingBehavior<T extends LivingEntity
                 if (node.canUse(mob, target)) candidates.add(node);
             }
         }
-        if (candidates.isEmpty()) return Collections.emptyList();
-
-        // 2. 获取当前活跃节点集合（存储节点引用）
-        Set<AttackNode<? extends LivingEntity>> activeNodes = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(Collections.emptySet());
-        if (activeNodes.isEmpty()) return candidates;
-
-        // 3. 过滤：候选节点必须被所有活跃节点允许
-        List<AttackNode<T>> permitted = new ArrayList<>();
-        for (AttackNode<T> candidate : candidates) {
-            boolean allowedByAll = true;
-            for (AttackNode<? extends LivingEntity> active : activeNodes) {
-                if (!active.isConcurrentAllowed(candidate.getId())) {
-                    allowedByAll = false;
-                    break;
-                }
-            }
-            if (allowedByAll) permitted.add(candidate);
-        }
-        return permitted;
+        return candidates;
     }
 
     @Override
@@ -198,6 +180,8 @@ public class AttackSchedulerWithoutBuiltlnCoolingBehavior<T extends LivingEntity
         int remainingMaxPriority = activeSet.stream().mapToInt(AttackNode::getPriority).max().orElse(-1);
         log.debug("Stop: activeNodes：{},maxPriority: {},currentNode.getPriority：{},current.animId：{}",activeSet,remainingMaxPriority,currentNode.getPriority(),currentNode.getAnimId());
         if (currentNode != null) {
+//            Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
+//            int remainingMaxPriority = activeSet.stream().mapToInt(AttackNode::getPriority).max().orElse(-1);
             log.debug("Stop: activeNodes：{},maxPriority: {},currentNode.getPriority：{},current.animId：{}",activeSet,remainingMaxPriority,currentNode.getPriority(),currentNode.getAnimId());
             if (currentNode.getPriority() == remainingMaxPriority) {
                 PacketDistributor.sendToPlayersTrackingEntity(mob, new AnimPacket(mob.getId(),-1));

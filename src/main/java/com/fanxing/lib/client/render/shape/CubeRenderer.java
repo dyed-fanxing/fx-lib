@@ -3,6 +3,7 @@ package com.fanxing.lib.client.render.shape;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public class CubeRenderer {
@@ -150,7 +151,12 @@ public class CubeRenderer {
     }
 
 
-
+    /**
+     * 以几何中心为基准渲染线框
+     */
+    public static void renderByVertexes(PoseStack.Pose pose, VertexConsumer consumer,Vector3f[] vertices,int r, int g, int b, int a) {
+        renderLineBox(pose, consumer, vertices, r, g, b, a);
+    }
     /**
      * 以一个顶点为基准渲染线框
      */
@@ -186,8 +192,8 @@ public class CubeRenderer {
      * 绘制立方体线框（通用方法）
      * @param vertices 8个顶点，顺序：底面4个（逆时针），顶面4个（对应底面顶点向上偏移）
      */
-    private static void renderLineBox(PoseStack.Pose pose, VertexConsumer consumer, Vector3f[] vertices,
-                                      int r, int g, int b, int a) {
+    public static void renderLineBox(PoseStack.Pose pose, VertexConsumer consumer, Vector3f[] vertices,
+                                     int r, int g, int b, int a) {
         int[][] edges = {
                 {0,1}, {1,2}, {2,3}, {3,0}, // 底面
                 {4,5}, {5,6}, {6,7}, {7,4}, // 顶面
@@ -197,7 +203,21 @@ public class CubeRenderer {
             LineRenderer.render(pose, consumer, vertices[edge[0]], vertices[edge[1]], r, g, b, a);
         }
     }
-
+    /**
+     * 绘制立方体线框（通用方法）
+     * @param vertices 8个顶点，顺序：底面4个（逆时针），顶面4个（对应底面顶点向上偏移）
+     */
+    public static void renderLineBox(PoseStack.Pose pose, VertexConsumer consumer, Vec3[] vertices,
+                                     float r, float g, float b, float a) {
+        int[][] edges = {
+                {0,1}, {1,2}, {2,3}, {3,0}, // 底面
+                {4,5}, {5,6}, {6,7}, {7,4}, // 顶面
+                {0,4}, {1,5}, {2,6}, {3,7}  // 垂直棱
+        };
+        for (int[] edge : edges) {
+            LineRenderer.render(pose, consumer, vertices[edge[0]].toVector3f(), vertices[edge[1]].toVector3f(), r, g, b, a);
+        }
+    }
 
 
 

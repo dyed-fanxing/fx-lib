@@ -134,7 +134,4 @@ public interface BeamRenderType {
 
 
 
-
-
-    RenderType RAY = BeamRenderType.ENERGY_BEAM_TRIANGLE.apply(ResourceLocations.WHITE_TEXTURE);
 }

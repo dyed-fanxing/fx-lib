@@ -185,7 +185,6 @@ public class OBB {
         }
         return cachedVertices;
     }
-
     public AABB getBoundingAABB() {
         if (cachedAABB == null) {
             cachedAABB = calculateBoundingAABB();

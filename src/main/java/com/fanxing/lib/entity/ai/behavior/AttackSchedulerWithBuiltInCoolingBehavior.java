@@ -1,10 +1,10 @@
 package com.fanxing.lib.entity.ai.behavior;
 
 
-import com.google.common.collect.ImmutableMap;
 import com.fanxing.lib.entity.ai.AttackNode;
 import com.fanxing.lib.net.packet.AnimPacket;
 import com.fanxing.lib.registry.MemoryModuleTypesFxLib;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 
 /**
@@ -27,7 +27,7 @@ import java.util.function.Function;
 public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> extends Behavior<T> {
     private static final Logger log = LoggerFactory.getLogger(AttackSchedulerWithBuiltInCoolingBehavior.class);
     protected final List<AttackNode<T>> nodes;                // 静态节点列表
-    protected final Function<T, List<AttackNode<T>>> dynamicFactory;                // 动态节点列表
+    protected final BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory;                // 动态节点列表
     protected MemoryModuleType<Unit> cooldownMemory = null;    // 内置冷却
     protected final int globalCoolDown;               // 全局冷却因子
     protected int innerCooldown;                              // 内置总冷却
@@ -38,16 +38,16 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
 
 
     public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, MemoryModuleType<Unit> cooldownMemory,int postStartDelay) {
-        this(nodes, mob -> List.of(), cooldownMemory,postStartDelay);
+        this(nodes, (a,t) -> List.of(), cooldownMemory,postStartDelay);
     }
     public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, MemoryModuleType<Unit> cooldownMemory,int globalCoolDown,int postStartDelay) {
-        this(nodes, mob -> List.of(), cooldownMemory,globalCoolDown,postStartDelay);
+        this(nodes, (a,t) -> List.of(), cooldownMemory,globalCoolDown,postStartDelay);
     }
-    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory, MemoryModuleType<Unit> cooldownMemory,int postStartDelay) {
+    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory, MemoryModuleType<Unit> cooldownMemory,int postStartDelay) {
         this(nodes, dynamicFactory, cooldownMemory, 20,postStartDelay);
     }
 
-    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory, MemoryModuleType<Unit> cooldownMemory, int globalCoolDown,int postStartDelay) {
+    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory, MemoryModuleType<Unit> cooldownMemory, int globalCoolDown,int postStartDelay) {
         super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypesFxLib.ATTACKING.get(), MemoryStatus.REGISTERED, MemoryModuleTypesFxLib.MOVE_LOCKING.get(), MemoryStatus.REGISTERED, cooldownMemory, MemoryStatus.VALUE_ABSENT), Integer.MAX_VALUE);
         this.nodes = nodes;
         this.dynamicFactory = dynamicFactory;
@@ -59,11 +59,11 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
 
 
 
-    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory) {
+    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory) {
         this(nodes, dynamicFactory, 20);
     }
 
-    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, Function<T, List<AttackNode<T>>> dynamicFactory, int globalCoolDown) {
+    public AttackSchedulerWithBuiltInCoolingBehavior(List<AttackNode<T>> nodes, BiFunction<T,LivingEntity, List<AttackNode<T>>> dynamicFactory, int globalCoolDown) {
         super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryStatus.VALUE_ABSENT, MemoryModuleTypesFxLib.MOVE_LOCKING.get(), MemoryStatus.REGISTERED, MemoryModuleTypesFxLib.ATTACKING.get(), MemoryStatus.VALUE_ABSENT), Integer.MAX_VALUE);
         this.nodes = nodes;
         this.dynamicFactory = dynamicFactory;
@@ -79,7 +79,7 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
         for (AttackNode<T> node : nodes) {
             if (node.canUse(mob, target)) candidates.add(node);
         }
-        List<AttackNode<T>> dynamicNodes = dynamicFactory.apply(mob);
+        List<AttackNode<T>> dynamicNodes = dynamicFactory.apply(mob,target);
         if (dynamicNodes != null) {
             for (AttackNode<T> node : dynamicNodes) {
                 if (node.canUse(mob, target)) candidates.add(node);
@@ -183,6 +183,13 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
                         activeSet.remove(currentNode);
                         // 选择新节点（子节点）
                         currentNode = selectNodeByWeight(available, mob, target, mob.getRandom());
+                        if (activeSet.stream().noneMatch(AttackNode::isControlMove)){
+//                            log.debug("当前攻击节点集合{}，没有锁定移动的节点，删除移动锁定", activeSet);
+                            mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get());
+                        }
+                        if (currentNode.isControlMove()) {
+                            mob.getBrain().setMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get(), Unit.INSTANCE);
+                        }
                         // 添加新节点
                         activeSet.add(currentNode);
                         mob.getBrain().setMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get(), activeSet);
@@ -209,10 +216,10 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
     @Override
     protected void stop(@NotNull ServerLevel level, @NotNull T mob, long gameTime) {
         // 从活跃集合中移除当前节点
+        Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
+        int remainingMaxPriority = activeSet.stream().mapToInt(AttackNode::getPriority).max().orElse(-1);
         if (currentNode != null) {
-            Set<AttackNode<?>> activeSet = mob.getBrain().getMemory(MemoryModuleTypesFxLib.ACTIVE_ATTACK_NODES.get()).orElse(new HashSet<>());
-            int remainingMaxPriority = activeSet.stream().mapToInt(AttackNode::getPriority).max().orElse(-1);
-            log.debug("Stop: activeNodes：{},maxPriority: {},currentNode.getPriority：{},current.animId：{}",activeSet,remainingMaxPriority,currentNode.getPriority(),currentNode.getAnimId());
+//            log.debug("Stop: activeNodes：{},maxPriority: {},currentNode.getPriority：{},current.animId：{}",activeSet,remainingMaxPriority,currentNode.getPriority(),currentNode.getAnimId());
             if (currentNode.getPriority() == remainingMaxPriority) {
                 PacketDistributor.sendToPlayersTrackingEntity(mob, new AnimPacket(mob.getId(),-1));
             }
@@ -226,7 +233,9 @@ public class AttackSchedulerWithBuiltInCoolingBehavior<T extends LivingEntity> e
         mob.getBrain().setMemoryWithExpiry(MemoryModuleType.ATTACK_COOLING_DOWN, true, globalCoolDown);
 
         mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.ATTACKING.get());
-        mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get());
+        if (activeSet.stream().noneMatch(AttackNode::isControlMove)){
+            mob.getBrain().eraseMemory(MemoryModuleTypesFxLib.MOVE_LOCKING.get());
+        }
 
 
         currentNode = null;

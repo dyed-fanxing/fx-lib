@@ -26,7 +26,7 @@ public class EntityTypesFxLib {
 //                            .sized(1.5f, 1.5f)  // 碰撞箱
 //                            .eyeHeightOffset(0.4f)
 //                            .clientTrackingRange(4)  // 客户端同步范围，以区块为单位
-//                            .build(ResourceLocation.fromNamespaceAndPath(FxUndertale.MOD_ID,"gaster_blaster").toString())
+//                            .build(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID,"gaster_blaster").toString())
 //            );
 //
 //    public static final DeferredHolder<EntityType<?>, EntityType<Sans>> SANS = register("sans",

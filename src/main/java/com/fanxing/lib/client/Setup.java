@@ -59,6 +59,7 @@ public class Setup {
         registrar.playToClient(AnimPacket.TYPE, AnimPacket.STREAM_CODEC, AnimPacket::handle);
 
 
+        registrar.playToClient(WarningTipAABBPacket.TYPE, WarningTipAABBPacket.STREAM_CODEC, WarningTipAABBPacket::handle);
         registrar.playToClient(WarningTipPacket.Cylinder.TYPE, WarningTipPacket.Cylinder.STREAM_CODEC, WarningTipPacket.Cylinder::handle);
         registrar.playToClient(WarningTipPacket.Cube.TYPE, WarningTipPacket.Cube.STREAM_CODEC, WarningTipPacket.Cube::handle);
         registrar.playToClient(WarningTipPacket.Quad.TYPE, WarningTipPacket.Quad.STREAM_CODEC, WarningTipPacket.Quad::handle);
@@ -67,7 +68,6 @@ public class Setup {
         registrar.playToClient(WarningTipPacket.Circle.TYPE, WarningTipPacket.Circle.STREAM_CODEC, WarningTipPacket.Circle::handle);
         registrar.playToClient(WarningTipPacket.CurveStrip.TYPE, WarningTipPacket.CurveStrip.STREAM_CODEC, WarningTipPacket.CurveStrip::handle);
         registrar.playToClient(WarningTipPacket.RadialPrecessionCurveStripsPacket.TYPE, WarningTipPacket.RadialPrecessionCurveStripsPacket.STREAM_CODEC, WarningTipPacket.RadialPrecessionCurveStripsPacket::handle);
-        registrar.playToClient(WarningTipPacket.RadialPrecessionCurveStripsGravityPacket.TYPE, WarningTipPacket.RadialPrecessionCurveStripsGravityPacket.STREAM_CODEC, WarningTipPacket.RadialPrecessionCurveStripsGravityPacket::handle);
         registrar.playToClient(SyncMotionPayload.TYPE,SyncMotionPayload.STREAM_CODEC, SyncMotionPayload::handle);
 
         registrar.playToServer(ColorSchemePacket.TYPE,ColorSchemePacket.STREAM_CODEC, ColorSchemePacket::handle);

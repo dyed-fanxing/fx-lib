@@ -1,9 +1,7 @@
 package com.fanxing.lib.data.tags;
 
-import com.fanxing.lib.data.damagesource.DamageTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.tags.DamageTypeTags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +19,5 @@ public class DamageTypeTagsProvider extends net.minecraft.data.tags.DamageTypeTa
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        this.tag(DamageTypeTags.BYPASSES_COOLDOWN).add(DamageTypes.FRAME,DamageTypes.GASTER_BLASTER_BEAM);
-        this.tag(DamageTypeTags.BYPASSES_ARMOR).add(DamageTypes.FRAME,DamageTypes.GASTER_BLASTER_BEAM);
-        this.tag(DamageTypeTags.NO_KNOCKBACK).add(DamageTypes.FRAME,DamageTypes.GASTER_BLASTER_BEAM);
     }
 }
