@@ -93,7 +93,6 @@ public class StopAndSwitchTargetIfTargetInvalidAndSelfNoAttacking {
                 if(checkTired && tiredSince.isPresent() && level.getGameTime()-tiredSince.get() > TIMEOUT){
                     onTimeout.accept(mob,target);
                 }else{
-//                    onAttackTarget.accept(mob,target);
                     return true;
                 }
             }

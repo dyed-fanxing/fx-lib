@@ -9,11 +9,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -101,7 +97,7 @@ public class SphereEffectEmitter {
             poseStack.translate(currentPos.x, currentPos.y, currentPos.z);
             poseStack.mulPose(RotUtils.rotation(new Vec3(0, 0, 1), ef.direction));
             poseStack.scale(currentWidth, currentWidth, stretch);
-            CircleRenderer.render(poseStack.last(), consumer,new Vector3f(0,0,-0.5f), 1.0f, 16, new Vector3f(0,0,1),
+            CircleRenderer.render(poseStack.last(), consumer, new Vector3f(0, 0, -0.5f), 1.0f, 16, new Vector3f(0, 0, 1),
                     color[0], color[1], color[2], color[3], OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
         }

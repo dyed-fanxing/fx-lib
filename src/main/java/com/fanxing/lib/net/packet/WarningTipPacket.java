@@ -5,7 +5,6 @@ import com.fanxing.lib.client.render.effect.EffectRendererHandler;
 import com.fanxing.lib.client.render.effect.WarningTip;
 import com.fanxing.lib.util.ByteBufUtils;
 import com.fanxing.lib.util.ParametricCurveType;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -25,11 +24,11 @@ import java.util.function.Function;
  */
 public abstract class WarningTipPacket implements CustomPacketPayload {
     private static final Logger log = LoggerFactory.getLogger(WarningTipPacket.class);
-    protected float x;
-    protected float y;
-    protected float z;
-    protected int lifetime;
-    protected int color;
+    public float x;
+    public float y;
+    public float z;
+    public int lifetime;
+    public int color;
 
     public WarningTipPacket(float x, float y, float z, int lifetime, int color) {
         this.x = x;
@@ -54,41 +53,29 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
     public static class Cylinder extends WarningTipPacket {
         public static final Type<Cylinder> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "warning_tip_cylinder_packet"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Cylinder> STREAM_CODEC = CustomPacketPayload.codec(Cylinder::write, Cylinder::new);
-
-        private final float h;
-        private final float r;
-        private final Direction gravity;
+        public final float h;
+        public final float r;
 
         public Cylinder(float x, float y, float z, float r, float h, int lifetime, int color) {
             super(x, y, z, lifetime, color);
             this.h = h;
             this.r = r;
-            this.gravity = Direction.DOWN;
-        }
-
-        public Cylinder(float x, float y, float z, float r, float h, int lifetime, int color, Direction gravity) {
-            super(x, y, z, lifetime, color);
-            this.h = h;
-            this.r = r;
-            this.gravity = gravity;
         }
 
         public Cylinder(FriendlyByteBuf buf) {
             super(buf);
             this.h = buf.readFloat();
             this.r = buf.readFloat();
-            this.gravity = buf.readEnum(Direction.class);
         }
 
         public void write(FriendlyByteBuf buf) {
             super.write(buf);
             buf.writeFloat(this.h);
             buf.writeFloat(this.r);
-            buf.writeEnum(this.gravity);
         }
 
         public static void handle(Cylinder packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Cylinder(packet.x, packet.y, packet.z, packet.r, packet.h, packet.lifetime, packet.color, packet.gravity)));
+            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Cylinder(packet.x, packet.y, packet.z, packet.lifetime, packet.color,packet.r, packet.h)));
         }
 
         @Override
@@ -102,10 +89,10 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         public static final StreamCodec<RegistryFriendlyByteBuf, Cube> STREAM_CODEC = CustomPacketPayload.codec(Cube::write, Cube::new);
 
 
-        private final float length;
-        private final float width;
-        private final float height;
-        private final float yaw;
+        public final float length;
+        public final float width;
+        public final float height;
+        public final float yaw;
 
         public Cube(float x, float y, float z, float length, float width, float height, float yaw, int lifetime, int color) {
             super(x, y, z, lifetime, color);
@@ -132,7 +119,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Cube packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Cube(packet.x, packet.y, packet.z, packet.length, packet.width, packet.height, packet.yaw, packet.lifetime, packet.color)));
+            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Cube(packet.x, packet.y, packet.z,packet.lifetime, packet.color, packet.length, packet.width, packet.height, packet.yaw)));
         }
 
         @Override
@@ -145,9 +132,9 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
     public static class Quad extends WarningTipPacket {
         public static final Type<Quad> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "warning_tip_quad_packet"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Quad> STREAM_CODEC = CustomPacketPayload.codec(Quad::write, Quad::new);
-        protected final float length;
-        protected final float width;
-        protected final float yaw;
+        public final float length;
+        public final float width;
+        public final float yaw;
 
         public Quad(float x, float y, float z, int lifetime, int color, float length, float width, float yaw) {
             super(x, y, z, lifetime, color);
@@ -179,13 +166,15 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
             return TYPE;
         }
     }
+
     public static class QuadPrecession extends Quad {
         public static final Type<QuadPrecession> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "warning_tip_quad_precession_packet"));
         public static final StreamCodec<RegistryFriendlyByteBuf, QuadPrecession> STREAM_CODEC = CustomPacketPayload.codec(QuadPrecession::write, QuadPrecession::new);
 
         public QuadPrecession(float x, float y, float z, int lifetime, int color, float length, float width, float yaw) {
-            super(x, y, z, lifetime, color,length,width,yaw);
+            super(x, y, z, lifetime, color, length, width, yaw);
         }
+
         public QuadPrecession(FriendlyByteBuf buf) {
             super(buf);
         }
@@ -193,21 +182,25 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         public static void handle(Quad packet, IPayloadContext context) {
             context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.QuadPrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw)));
         }
+
         @Override
         public @NotNull Type<? extends CustomPacketPayload> type() {
             return TYPE;
         }
     }
+
     public static class Circle extends WarningTipPacket {
         public static final Type<Circle> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "warning_tip_circle_packet"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Circle> STREAM_CODEC = CustomPacketPayload.codec(Circle::write, Circle::new);
-        protected float radius;
-        protected int delay;
-        public Circle(float x, float y, float z, int lifetime, int color, float radius,int delay) {
+        public float radius;
+        public int delay;
+
+        public Circle(float x, float y, float z, int lifetime, int color, float radius, int delay) {
             super(x, y, z, lifetime, color);
             this.radius = radius;
             this.delay = delay;
         }
+
         public Circle(float x, float y, float z, int lifetime, int color, float radius) {
             this(x, y, z, lifetime, color, radius, 0);
         }
@@ -225,7 +218,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Circle packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Circle(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.radius,packet.delay)));
+            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Circle(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.radius, packet.delay)));
         }
 
         @Override
@@ -233,15 +226,18 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
             return TYPE;
         }
     }
+
     public static class QuadCirclePrecession extends Quad {
         public static final Type<QuadCirclePrecession> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "warning_tip_quad_circle_precession_packet"));
         public static final StreamCodec<RegistryFriendlyByteBuf, QuadCirclePrecession> STREAM_CODEC = CustomPacketPayload.codec(QuadCirclePrecession::write, QuadCirclePrecession::new);
 
         protected float radius;
-        public QuadCirclePrecession(float x, float y, float z, int lifetime, int color, float length, float width, float yaw,float radius) {
-            super(x, y, z, lifetime, color,length,width,yaw);
+
+        public QuadCirclePrecession(float x, float y, float z, int lifetime, int color, float length, float width, float yaw, float radius) {
+            super(x, y, z, lifetime, color, length, width, yaw);
             this.radius = radius;
         }
+
         public QuadCirclePrecession(FriendlyByteBuf buf) {
             super(buf);
             this.radius = buf.readFloat();
@@ -253,7 +249,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(QuadCirclePrecession packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.QuadCirclePrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw,packet.radius)));
+            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.QuadCirclePrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw, packet.radius)));
         }
 
         @Override
@@ -261,16 +257,16 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
             return TYPE;
         }
     }
-    
+
     public static class CurveStrip extends WarningTipPacket {
         public static final Type<CurveStrip> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "warning_tip_curve_strip_packet"));
         public static final StreamCodec<FriendlyByteBuf, CurveStrip> STREAM_CODEC = CustomPacketPayload.codec(CurveStrip::write, CurveStrip::new);
-        private final float radius;
-        private final float width;
-        private final float yaw;
-        private final int segments;
-        private final ParametricCurveType curveType;
-        private final float[] params;
+        public final float radius;
+        public final float width;
+        public final float yaw;
+        public final int segments;
+        public final ParametricCurveType curveType;
+        public final float[] params;
 
         public CurveStrip(float x, float y, float z, int lifetime, int color, float radius, float width, float yaw, int segments, ParametricCurveType curveType, float... params) {
             super(x, y, z, lifetime, color);
@@ -322,12 +318,12 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
                 ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "radial_precession_curve_strips_packet")
         );
         public static final StreamCodec<FriendlyByteBuf, RadialPrecessionCurveStripsPacket> STREAM_CODEC = CustomPacketPayload.codec(RadialPrecessionCurveStripsPacket::write, RadialPrecessionCurveStripsPacket::new);
-        protected final int count;                 // 条带数量
-        protected final float radius;
-        protected final float width;
-        protected final int segments;
-        protected final ParametricCurveType curveType;  // 已包含正向/反向
-        protected final float[] params;
+        public final int count;                 // 条带数量
+        public final float radius;
+        public final float width;
+        public final int segments;
+        public final ParametricCurveType curveType;  // 已包含正向/反向
+        public final float[] params;
 
         public RadialPrecessionCurveStripsPacket(float x, float y, float z, int lifetime, int color, int count, float radius, float width, int segments, ParametricCurveType curveType, float... params) {
             super(x, y, z, lifetime, color);
@@ -370,49 +366,6 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
                             packet.lifetime, packet.color,
                             packet.radius, packet.width, yaw,
                             packet.segments, baseCurve
-                    ));
-                }
-            });
-        }
-
-        @Override
-        public @NotNull Type<? extends CustomPacketPayload> type() {
-            return TYPE;
-        }
-    }
-    public static class RadialPrecessionCurveStripsGravityPacket extends RadialPrecessionCurveStripsPacket {
-        public static final Type<RadialPrecessionCurveStripsGravityPacket> TYPE = new Type<>(
-                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "radial_precession_curve_strips_gravity_packet")
-        );
-        public static final StreamCodec<FriendlyByteBuf, RadialPrecessionCurveStripsGravityPacket> STREAM_CODEC = CustomPacketPayload.codec(RadialPrecessionCurveStripsGravityPacket::write, RadialPrecessionCurveStripsGravityPacket::new);
-
-
-        protected final Direction gravity;
-        public RadialPrecessionCurveStripsGravityPacket(float x, float y, float z, int lifetime, int color, int count, float radius, float width, int segments,Direction gravity,ParametricCurveType curveType, float... params) {
-            super(x, y, z, lifetime, color, count, radius, width, segments, curveType, params);
-            this.gravity = gravity;
-        }
-
-        public RadialPrecessionCurveStripsGravityPacket(FriendlyByteBuf buf) {
-            super(buf);
-            this.gravity = buf.readEnum(Direction.class);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buf) {
-            super.write(buf);
-            buf.writeEnum(gravity);
-        }
-        public static void handle(RadialPrecessionCurveStripsGravityPacket packet, IPayloadContext context) {
-            context.enqueueWork(() -> {
-                Function<Float, Vec3> baseCurve = packet.curveType.create(packet.params);
-                for (int s = 0; s < packet.count; s++) {
-                    float yaw = s * 360f / packet.count;   // 均匀分布角度
-                    EffectRendererHandler.addDecoration(new WarningTip.CurveStripPrecessionGravity(
-                            packet.x, packet.y, packet.z,
-                            packet.lifetime, packet.color,
-                            packet.radius, packet.width, yaw,
-                            packet.segments, baseCurve,packet.gravity
                     ));
                 }
             });

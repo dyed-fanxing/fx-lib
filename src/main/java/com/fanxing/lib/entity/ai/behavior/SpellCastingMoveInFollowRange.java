@@ -1,8 +1,8 @@
 package com.fanxing.lib.entity.ai.behavior;
 
+import com.fanxing.lib.entity.ai.tracker.IgnoringSensorEntityTracker;
 import com.fanxing.lib.registry.MemoryModuleTypesFxLib;
 import com.google.common.collect.ImmutableMap;
-import com.fanxing.lib.entity.ai.tracker.IgnoringSensorEntityTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -76,8 +76,8 @@ public class SpellCastingMoveInFollowRange<T extends Mob> extends Behavior<T> {
             if(!mob.hasLineOfSight(target)){
                 mob.getBrain().setMemory(MemoryModuleType.WALK_TARGET,new WalkTarget(new IgnoringSensorEntityTracker(target, false), speedModifier, 5));
             }else{
+                mob.setYRot(mob.yHeadRot);
                 if(disSqr <= closeRangeSqr) {
-                    mob.setYRot(mob.yHeadRot);
                     handleCloseRange(mob, target,disSqr);
                 }else if(disSqr <= midRangeSqr) {
                     mob.getMoveControl().strafe(0, 0);
@@ -153,7 +153,6 @@ public class SpellCastingMoveInFollowRange<T extends Mob> extends Behavior<T> {
     }
 
     protected void handleMidRange(T mob, LivingEntity target,double disSqr){
-        mob.setYRot(mob.yHeadRot);
         if (strafeRightTime-- <= 0) {
             strafeRightTime = 5 + mob.getRandom().nextInt(25);
             right = mob.getRandom().nextBoolean() ? 1 : -1;
@@ -164,12 +163,17 @@ public class SpellCastingMoveInFollowRange<T extends Mob> extends Behavior<T> {
                 front = mob.getRandom().nextInt(3)-1;
                 mob.getMoveControl().strafe(front * STRAFE_SCALE, right * STRAFE_SCALE);
             }
-        }else {
-            mob.getMoveControl().strafe(0f, right * STRAFE_SCALE);
-        }
+        }else mob.getMoveControl().strafe(0f, right * STRAFE_SCALE);
     }
     public boolean enableFrontAndBack(){
         return true;
+    }
+
+    /**
+     * 前后原地踏步：为了让身体同步头部
+     */
+    public void markingTime(T mob){
+        mob.getMoveControl().strafe(-front * STRAFE_SCALE, 0f);
     }
 
     protected void handleFarRange(T mob, LivingEntity target,double disSqr){
