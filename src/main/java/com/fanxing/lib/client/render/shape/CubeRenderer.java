@@ -1,5 +1,6 @@
 package com.fanxing.lib.client.render.shape;
 
+import com.fanxing.lib.phys.OBB;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.FastColor;
@@ -204,19 +205,28 @@ public class CubeRenderer {
         }
     }
     /**
-     * 绘制立方体线框（通用方法）
-     * @param vertices 8个顶点，顺序：底面4个（逆时针），顶面4个（对应底面顶点向上偏移）
+     * 渲染 OBB 线框（直接使用 OBB 原生顶点顺序，不重排）
      */
-    public static void renderLineBox(PoseStack.Pose pose, VertexConsumer consumer, Vec3[] vertices,
-                                     float r, float g, float b, float a) {
+    public static void renderOBBOutline(PoseStack.Pose pose, VertexConsumer consumer, OBB obb,
+                                        float r, float g, float b, float a) {
+        Vec3[] v = obb.getVertices();
+        // OBB 顶点顺序: (sx=-1)0..3, (sx=+1)4..7, 每组内 sy=-1,0, sy=+1,1, sz=-1,0, sz=+1,1
+        // 即: 0=后下左, 1=前下左, 2=后上左, 3=前上左, 4=后下右, 5=前下右, 6=后上右, 7=前上右
         int[][] edges = {
-                {0,1}, {1,2}, {2,3}, {3,0}, // 底面
-                {4,5}, {5,6}, {6,7}, {7,4}, // 顶面
-                {0,4}, {1,5}, {2,6}, {3,7}  // 垂直棱
+                {0,1}, {1,5}, {5,4}, {4,0}, // 底面
+                {2,3}, {3,7}, {7,6}, {6,2}, // 顶面
+                {0,2}, {1,3}, {4,6}, {5,7}  // 垂直棱
         };
         for (int[] edge : edges) {
-            LineRenderer.render(pose, consumer, vertices[edge[0]].toVector3f(), vertices[edge[1]].toVector3f(), r, g, b, a);
+            LineRenderer.render(pose, consumer, v[edge[0]].toVector3f(), v[edge[1]].toVector3f(), r, g, b, a);
         }
+    }
+    /**
+     * 渲染 OBB 线框（int 颜色重载）
+     */
+    public static void renderOBBOutline(PoseStack.Pose pose, VertexConsumer consumer, OBB obb,
+                                        int r, int g, int b, int a) {
+        renderOBBOutline(pose, consumer, obb, r / 255f, g / 255f, b / 255f, a / 255f);
     }
 
 

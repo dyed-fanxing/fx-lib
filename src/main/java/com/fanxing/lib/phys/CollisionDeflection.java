@@ -46,7 +46,13 @@ public interface CollisionDeflection {
     static void mirrorDeflect(Entity entity, Vec3i normal,RandomSource random) {
         mirrorDeflect(entity,new Vec3(normal.getX(), normal.getY(), normal.getZ()),random);
     }
-
+    static void mirrorDeflect(Entity entity, Vec3 normal) {
+        Vec3 motion = entity.getDeltaMovement();
+        // 计算镜面反射
+        double dotProduct = motion.dot(normal);
+        Vec3 reflection = motion.subtract(normal.scale(2 * dotProduct));
+        entity.setDeltaMovement(reflection);
+    }
 
     /**
      * 使实体在碰撞表面滑动，可独立控制法向和切向的速度保留

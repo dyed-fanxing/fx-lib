@@ -118,7 +118,7 @@ public class OBB {
     }
 
     /**
-     * key 构建以实体几何中心为旋转中心的OBB，最终的OBB的几何中心就是position
+     * KEY 构建以实体几何中心为旋转中心的OBB，最终的OBB的几何中心就是position
      */
     public static OBB fromCenter(Entity entity, float partialTick) {
         float halfWidth = entity.getBbWidth() * 0.5f;
@@ -131,7 +131,7 @@ public class OBB {
     }
 
     /**
-     * key 构建以实体脚底(position)为旋转中心的OBB，最终的OBB的几何中心是绕position旋转得到的
+     * KEY 构建以实体脚底(position)为旋转中心的OBB，最终的OBB的几何中心是绕position旋转得到的
      *  !!! 在做旋转碰撞检测时，需要传入position作为旋转点pivot，而不是OBB自身的center
      */
     public static OBB fromFoot(Entity entity, float partialTick) {

@@ -10,7 +10,6 @@ import com.fanxing.lib.phys.OBB;
 import com.fanxing.lib.util.RotUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.fanxing.lib.util.RenderUtils;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.util.Mth;
@@ -56,7 +55,7 @@ public class EntityRenderDispatcherMixin {
             OBB obb = obbEntity.getOBB(partialTicks).move(entity.position().reverse());
 //            AABB boundingAABB = obb.getBoundingAABB();
 //            LevelRenderer.renderLineBox(poseStack,consumer,boundingAABB,1.0F, 0.0F, 0.0F, 1.0F);
-            CubeRenderer.renderLineBox(poseStack.last(), consumer, obb.getVertices(), r, g, b, 1.0f);
+            CubeRenderer.renderOBBOutline(poseStack.last(), consumer, obb, r, g, b, 1.0f);
             // 2. 如果是多部分实体，渲染各部分（保持原版逻辑）
             if (entity.isMultipartEntity()) {
                 double d0 = -Mth.lerp(partialTicks, entity.xOld, entity.getX());
@@ -71,7 +70,7 @@ public class EntityRenderDispatcherMixin {
                         poseStack.translate(d3, d4, d5);
                         // 检查部分实体是否也是OBB实体
                         if (part instanceof OBBHolder partObbEntity && partObbEntity.getOBB() != null) {
-                            CubeRenderer.renderLineBox(poseStack.last(), consumer, partObbEntity.getOBB(partialTicks).getVertices(), r, g, b, 255);
+                            CubeRenderer.renderOBBOutline(poseStack.last(), consumer, partObbEntity.getOBB(partialTicks), r, g, b, 255);
                         } else {
                             // 原版渲染
                             AABB partAABB = part.getBoundingBox().move(-part.getX(), -part.getY(), -part.getZ());
@@ -84,9 +83,9 @@ public class EntityRenderDispatcherMixin {
 
             // 3. 如果是生物，渲染眼睛高度
             if (entity instanceof LivingEntity) {
-                CubeRenderer.renderLineBox(poseStack.last(), consumer, obb.getSliceRelativeToEntityFeet(entity.getEyeHeight()).getVertices(), 1.0F, 0F, 0F, 1.0f);
+                CubeRenderer.renderOBBOutline(poseStack.last(), consumer, obb.getSliceRelativeToEntityFeet(entity.getEyeHeight()), 1.0F, 0F, 0F, 1.0f);
             } else {
-                CubeRenderer.renderLineBox(poseStack.last(), consumer, obb.getSliceRelativeToEntityFeet(entity.getEyeHeight()).getVertices(), 1.0F, 0.5F, 0F, 1.0f);
+                CubeRenderer.renderOBBOutline(poseStack.last(), consumer, obb.getSliceRelativeToEntityFeet(entity.getEyeHeight()), 1.0F, 0.5F, 0F, 1.0f);
             }
 
             // 4. 如果有载具，渲染乘坐位置
@@ -102,14 +101,14 @@ public class EntityRenderDispatcherMixin {
                     poseStack.translate(-vehicle.getX(), -vehicle.getY(), -vehicle.getZ());
                     // 待渲染OBB载具
                     // 创建乘坐位置的扁平方框OBB
-                    CubeRenderer.renderLineBox(poseStack.last(), consumer, new OBB(
+                    CubeRenderer.renderOBBOutline(poseStack.last(), consumer, new OBB(
                             ridingPosWorld,
                             Math.min(obb.xHalfSize, vehicleObb.xHalfSize),  // 宽度
                             0.03125f,  // 很薄（0.0625F的一半，因为OBB是半尺寸）
                             Math.min(obb.zHalfSize, vehicleObb.zHalfSize),  // 长度
                             obb.forward,  // 使用骑手的方向
                             obb.up
-                    ).getVertices(), 255, 255, 0, 255);
+                    ), 255, 255, 0, 255);
                     poseStack.popPose();
                 } else {
                     LevelRenderer.renderLineBox(poseStack, consumer,

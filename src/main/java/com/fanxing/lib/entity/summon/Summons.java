@@ -14,13 +14,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
 public abstract class Summons extends Entity implements TraceableEntity {
-    private static final Logger log = LoggerFactory.getLogger(Summons.class);
     protected UUID ownerUUID;
     protected Entity owner;
     protected int ownerId = -1;
