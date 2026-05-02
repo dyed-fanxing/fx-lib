@@ -39,6 +39,8 @@ public class FxLib {
         AttributesFxLib.register(modEventBus);           // 属性注册
         modEventBus.addListener(AttributesFxLib::onEntityAttributeModification);
 
+        MemoryModuleTypesFxLib.register(modEventBus);    // 记忆注册
+        NumberProvidersFxLib.register(modEventBus);      // 数字提供者注册
         BlockTypesFxLib.register(modEventBus);           // 方块注册
         ItemTypesFxLib.register(modEventBus);            // 物品注册
         EntityTypesFxLib.register(modEventBus);          // 实体注册
@@ -47,9 +49,7 @@ public class FxLib {
         ParticleTypesFxLib.register(modEventBus);        // 粒子注册
         MenuTypesFxLib.register(modEventBus);            // 菜单注册
         AttachmentTypesFxLib.register(modEventBus);      // 附件注册
-        MemoryModuleTypesFxLib.register(modEventBus);    // 记忆注册
         DataComponentsFxLib.register(modEventBus);       // 数据组件注册
-        NumberProvidersFxLib.register(modEventBus);      // 数字提供者注册
         StructureProcessorTypesFxLib.register(modEventBus); // 结构后处理器注册
 
         IntegrationFx.register(modEventBus);               // 其他注册

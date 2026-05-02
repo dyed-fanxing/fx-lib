@@ -1,5 +1,6 @@
 package com.fanxing.lib.client.gui.component;
 
+import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
@@ -26,11 +27,11 @@ public class ColorPaletteWidget extends AbstractWidget implements RadioOption<Li
     private final Consumer<ColorPaletteWidget> onPress;  // 整体点击回调
 
     /**
-     * @param orientation 排列方向（水平或垂直）
+     * @param orientation  排列方向（水平或垂直）
      * @param swatchWidth  每个色块的宽度（像素）
-     * @param swatchHeight  每个色块的高度（像素）
-     * @param colors      颜色列表（决定色块数量）
-     * @param onPress     点击整个组件时的回调
+     * @param swatchHeight 每个色块的高度（像素）
+     * @param colors       颜色列表（决定色块数量）
+     * @param onPress      点击整个组件时的回调
      */
     public ColorPaletteWidget(int x, int y, ScreenAxis orientation, int swatchWidth, int swatchHeight, List<Integer> colors, Consumer<ColorPaletteWidget> onPress, Component tooltip) {
         super(x, y,
@@ -45,22 +46,25 @@ public class ColorPaletteWidget extends AbstractWidget implements RadioOption<Li
         this.setTooltip(Tooltip.create(tooltip));
         this.setMessage(tooltip);
     }
+
     public ColorPaletteWidget(int x, int y, ScreenAxis orientation, int swatchSize, List<Integer> colors, Consumer<ColorPaletteWidget> onPress, Component tooltip) {
-        this(x,y,orientation,swatchSize,swatchSize,colors,onPress,tooltip);
+        this(x, y, orientation, swatchSize, swatchSize, colors, onPress, tooltip);
     }
 
     public static ColorPaletteWidget horizontal(int x, int y, int swatchWidth, int swatchHeight, List<Integer> colors, Consumer<ColorPaletteWidget> onPress, Component tooltip) {
-        return new ColorPaletteWidget(x, y, ScreenAxis.HORIZONTAL, swatchWidth,swatchHeight, colors, onPress,tooltip);
+        return new ColorPaletteWidget(x, y, ScreenAxis.HORIZONTAL, swatchWidth, swatchHeight, colors, onPress, tooltip);
     }
+
     public static ColorPaletteWidget vertical(int x, int y, int swatchWidth, int swatchHeight, List<Integer> colors, Consumer<ColorPaletteWidget> onPress, Component tooltip) {
-        return new ColorPaletteWidget(x, y, ScreenAxis.VERTICAL, swatchWidth,swatchHeight, colors, onPress,tooltip);
+        return new ColorPaletteWidget(x, y, ScreenAxis.VERTICAL, swatchWidth, swatchHeight, colors, onPress, tooltip);
     }
+
     public static ColorPaletteWidget horizontal(int x, int y, int swatchSize, List<Integer> colors, Consumer<ColorPaletteWidget> onPress, Component tooltip) {
-        return new ColorPaletteWidget(x, y, ScreenAxis.HORIZONTAL, swatchSize, colors, onPress,tooltip);
+        return new ColorPaletteWidget(x, y, ScreenAxis.HORIZONTAL, swatchSize, colors, onPress, tooltip);
     }
 
     public static ColorPaletteWidget vertical(int x, int y, int swatchSize, List<Integer> colors, Consumer<ColorPaletteWidget> onPress, Component tooltip) {
-        return new ColorPaletteWidget(x, y, ScreenAxis.VERTICAL, swatchSize, colors, onPress,tooltip);
+        return new ColorPaletteWidget(x, y, ScreenAxis.VERTICAL, swatchSize, colors, onPress, tooltip);
     }
 
     /**
@@ -96,14 +100,22 @@ public class ColorPaletteWidget extends AbstractWidget implements RadioOption<Li
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int x = getX();
         int y = getY();
+//        if (colors.isEmpty()) {
+//            // 整个色块显示随时间渐变的彩虹
+//            float hue = (Util.getMillis() % 2000) / 2000.0f;
+//            int color = java.awt.Color.HSBtoRGB(hue, 1.0f, 1.0f);
+//            graphics.fill(x, y, x + getWidth(), y + getHeight(), 0xFF000000 | color);
+//            // 跳过后续遍历
+//            return;
+//        }
         // 绘制所有色块
         for (int i = 0; i < colors.size(); i++) {
             int color = colors.get(i);
-            if(orientation == ScreenAxis.HORIZONTAL){
+            if (orientation == ScreenAxis.HORIZONTAL) {
                 int currentX = x + i * swatchWidth;
                 graphics.fill(currentX, y, currentX + swatchWidth, y + swatchHeight, 0xFF000000 | color);
-            }else{
-                int currentY = y + (orientation == ScreenAxis.VERTICAL ? i * swatchHeight : 0);
+            } else {
+                int currentY = y + (i * swatchHeight);
                 graphics.fill(x, currentY, x + swatchWidth, currentY + swatchHeight, 0xFF000000 | color);
             }
         }
@@ -127,7 +139,6 @@ public class ColorPaletteWidget extends AbstractWidget implements RadioOption<Li
     protected void updateWidgetNarration(NarrationElementOutput output) {
         output.add(NarratedElementType.TITLE, Component.translatable("gui.fx_lib.color_scheme"));
     }
-
 
 
 }

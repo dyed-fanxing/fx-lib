@@ -39,6 +39,7 @@ public interface BeamRenderType {
                     .createCompositeState(false)
     ));
     RenderType BEAM_NO_TRANSPARENCY_WHITE = BeamRenderType.BEAM_NO_CULL.apply(ResourceLocations.WHITE_TEXTURE, false);
+    RenderType BEAM_TRANSPARENCY_WHITE = BeamRenderType.BEAM_NO_CULL.apply(ResourceLocations.WHITE_TEXTURE, true);
     BiFunction<ResourceLocation, Boolean, RenderType> BEAM_NO_CULL_TRIANGLE = Util.memoize((texture, translucent) -> RenderType.create(
             "beam_no_cull_triangle", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLES, 1536, false, translucent,
             RenderType.CompositeState.builder()
@@ -61,6 +62,7 @@ public interface BeamRenderType {
                     .createCompositeState(false)
     ));
     RenderType BEAM_NO_TRANSPARENCY_TRIANGLE_STRIP_WHITE = BeamRenderType.BEAM_NO_CULL_TRIANGLE_STRIP.apply(ResourceLocations.WHITE_TEXTURE, false);
+    RenderType BEAM_TRANSPARENCY_TRIANGLE_STRIP_WHITE = BeamRenderType.BEAM_NO_CULL_TRIANGLE_STRIP.apply(ResourceLocations.WHITE_TEXTURE, true);
 
 
 

@@ -241,28 +241,32 @@ public class EntityPreview<T extends Entity> extends AbstractWidget {
     // ==================== 实例渲染（含钩子） ====================
     protected void renderEntity(GuiGraphics graphics, float centerX, float centerY, float scale, Vector3f offset, Quaternionf rotation, @Nullable Quaternionf cameraOrientation, float partialTick) {
         graphics.pose().pushPose();
-        graphics.pose().translate(centerX + transX, centerY + transY, 50.0F);
+        graphics.pose().translate(centerX + transX, centerY + transY, 0F);
         graphics.pose().scale(scale, scale, scale);
         graphics.pose().translate(offset.x, offset.y, offset.z);
         graphics.pose().mulPose(rotation);
 
         Lighting.setupForEntityInInventory();
+        RenderSystem.disableBlend();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         if (cameraOrientation != null) {
             dispatcher.overrideCameraOrientation(cameraOrientation.conjugate(new Quaternionf()).rotateY((float) Math.PI));
         }
         dispatcher.setRenderShadow(false);
-        RenderSystem.runAsFancy(() -> {
-            dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880);
-            afterRender(graphics, partialTick);
-        });
+        preRender(graphics, partialTick);
+        dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880);
+        afterRender(graphics, partialTick);
         graphics.flush();
         dispatcher.setRenderShadow(true);
         graphics.pose().popPose();
         Lighting.setupFor3DItems();
     }
 
-
+    /**
+     * 钩子方法：在实体渲染完成后（矩阵状态仍然有效）调用，可用于添加额外特效。
+     */
+    protected void preRender(GuiGraphics graphics, float partialTick) {
+    }
     /**
      * 钩子方法：在实体渲染完成后（矩阵状态仍然有效）调用，可用于添加额外特效。
      */

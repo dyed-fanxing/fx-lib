@@ -6,6 +6,8 @@
   "config.fx_lib.general.segments": "圆段数",
   "gui.fx_lib.preset": "预设",
   "gui.fx_lib.add": "添加",
+  "gui.fx_lib.color_preset.tooltip": "请输入预设名称",
+  "gui.fx_lib.color_preset.rainbow_gradient": "彩虹渐变",
   "gui.fx_lib.color_picker": "调色板",
   "gui.fx_lib.color_scheme": "颜色方案",
   "gui.fx_lib.follow": "跟随",

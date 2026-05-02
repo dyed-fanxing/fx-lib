@@ -6,6 +6,8 @@
   "config.fx_lib.general.segments": "circle segments",
   "gui.fx_lib.preset": "preset",
   "gui.fx_lib.add": "add",
+  "gui.fx_lib.color_preset.tooltip": "Please enter preset name",
+  "gui.fx_lib.color_preset.rainbow_gradient": "rainbow gradient",
   "gui.fx_lib.color_picker": "color picker",
   "gui.fx_lib.color_scheme": "color scheme",
   "gui.fx_lib.follow": "follow",
