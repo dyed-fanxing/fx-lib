@@ -32,6 +32,14 @@ public class IntegerEditBox extends EditBox {
         setResponder(this::onTextChanged);
     }
 
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+        // 先移到行首，强制驱动 displayPos 归零，再移到行尾保持用户习惯
+        setCursorPosition(0);
+        moveCursorToEnd(false);
+    }
+
     public IntegerEditBox wrap(boolean wrap) {
         this.wrap = wrap;
         return this;
@@ -146,7 +154,8 @@ public class IntegerEditBox extends EditBox {
             // 已经是标准形式，通知外部
             try {
                 onValueChange.accept(Integer.parseInt(text));
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         insideCorrection = false;
