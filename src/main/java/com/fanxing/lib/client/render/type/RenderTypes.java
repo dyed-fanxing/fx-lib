@@ -36,7 +36,7 @@ public interface RenderTypes {
      * 适合渲染：圆，任意三角形网格等
      */
     BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLES = Util.memoize((texture, sortOnUpload) -> RenderType.create(
-            "entity_translucent_emissive_triangles", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 1536, false, sortOnUpload,
+            "entity_translucent_emissive_triangles", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
@@ -51,7 +51,7 @@ public interface RenderTypes {
      * 顶点数最少：segments * 2 个顶点
      */
     BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP = Util.memoize((texture, sortOnUpload) -> RenderType.create(
-            "entity_translucent_emissive_triangle_strip", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, sortOnUpload,
+            "entity_translucent_emissive_triangle_strip", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
@@ -67,7 +67,7 @@ public interface RenderTypes {
      * 顶点数最少：segments + 2 个顶点
      */
     BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN = Util.memoize((texture, sortOnUpload) -> RenderType.create(
-            "entity_translucent_emissive_triangle_fan", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_FAN, 1536, false, sortOnUpload,
+            "entity_translucent_emissive_triangle_fan", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLE_FAN, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
@@ -81,7 +81,7 @@ public interface RenderTypes {
 
     // ========== ENERGY_SWIRL 能量漩涡静态方法（带偏移） ==========
     static RenderType energySwirl(ResourceLocation resourceLocation, float uOffset, float vOffset) {
-        return RenderType.create("energy_swirl",DefaultVertexFormat.NEW_ENTITY,VertexFormat.Mode.QUADS,1536,false,true,
+        return RenderType.create("energy_swirl",DefaultVertexFormat.NEW_ENTITY,VertexFormat.Mode.QUADS,1536,false,false,
                 RenderType.CompositeState.builder()
                         .setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
                         .setTextureState(new TextureStateShard(resourceLocation, false, false))

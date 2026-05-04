@@ -23,13 +23,14 @@ import static net.minecraft.client.renderer.RenderStateShard.TRANSLUCENT_TRANSPA
 
 public interface BeamRenderType {
     ResourceLocation FLOW_BEAM_TEXTURE = ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID,"textures/misc/flow_beam_glow.png");
+    ResourceLocation FLOW_ROLL_BEAM_TEXTURE = ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID,"textures/misc/diagonal_mirror_gradient.png");
 
     /**
      * 与原版beam的区别为 NO_CULL，因为这个GB炮是跟着实体渲染的，而原版的信标光束是跟着方块渲染的，顺序不一样
      * 如果使用原版的beam，会导致光束不会覆盖穿过的实体，而是会在光束中看到实体，且光束的两端会被GB炮覆盖导致透明
      */
     BiFunction<ResourceLocation, Boolean, RenderType> BEAM_NO_CULL = Util.memoize((texture, translucent) -> RenderType.create(
-            "beam_no_cull", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 1536, false, translucent,
+            "beam_no_cull", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
@@ -41,7 +42,7 @@ public interface BeamRenderType {
     RenderType BEAM_NO_TRANSPARENCY_WHITE = BeamRenderType.BEAM_NO_CULL.apply(ResourceLocations.WHITE_TEXTURE, false);
     RenderType BEAM_TRANSPARENCY_WHITE = BeamRenderType.BEAM_NO_CULL.apply(ResourceLocations.WHITE_TEXTURE, true);
     BiFunction<ResourceLocation, Boolean, RenderType> BEAM_NO_CULL_TRIANGLE = Util.memoize((texture, translucent) -> RenderType.create(
-            "beam_no_cull_triangle", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLES, 1536, false, translucent,
+            "beam_no_cull_triangle", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLES, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
@@ -50,9 +51,11 @@ public interface BeamRenderType {
                     .setCullState(NO_CULL)
                     .createCompositeState(false)
     ));
+
+
     RenderType BEAM_NO_TRANSPARENCY_TRIANGLE_WHITE = BeamRenderType.BEAM_NO_CULL_TRIANGLE.apply(ResourceLocations.WHITE_TEXTURE, false);
     BiFunction<ResourceLocation, Boolean, RenderType> BEAM_NO_CULL_TRIANGLE_STRIP = Util.memoize((texture, translucent) -> RenderType.create(
-            "beam_no_cull_triangle_strip", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, translucent,
+            "beam_no_cull_triangle_strip", DefaultVertexFormat.BLOCK, VertexFormat.Mode.TRIANGLE_STRIP, 1536, false, true,
             RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_BEACON_BEAM_SHADER)
                     .setTextureState(new TextureStateShard(texture, false, false))
