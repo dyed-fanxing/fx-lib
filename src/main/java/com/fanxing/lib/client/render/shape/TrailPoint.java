@@ -1,4 +1,4 @@
-package com.fanxing.lib.client.render.component;
+package com.fanxing.lib.client.render.shape;
 
 import org.joml.Vector3f;
 

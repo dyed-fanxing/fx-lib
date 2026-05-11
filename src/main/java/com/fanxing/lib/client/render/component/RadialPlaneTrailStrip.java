@@ -1,5 +1,6 @@
 package com.fanxing.lib.client.render.component;
 
+import com.fanxing.lib.client.render.shape.TrailPoint;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,7 +30,7 @@ public class RadialPlaneTrailStrip extends AbstractPointTrail<RadialPlaneTrailSt
     }
 
     @Override
-    public void render(List<TrailPoint> list,PoseStack poseStack, MultiBufferSource bufferSource, VertexConsumer consumer,
+    public void render(List<TrailPoint> list, PoseStack poseStack, MultiBufferSource bufferSource, VertexConsumer consumer,
                        int packedLight, float currentTime) {
         Matrix4f matrix = poseStack.last().pose();
         int size = list.size();

@@ -18,60 +18,84 @@ public class SphereRenderer {
      * @param segments 分段数
      */
     public static void render(PoseStack.Pose pose, VertexConsumer consumer, Vector3f center, float radius, int segments,
-                              int r, int g, int b, int a, int overlay, int light, float uScale, float vScale) {
+                              int r, int g, int b, int a, int overlay, int light, float uScale, float vScale, float uOffset, float vOffset) {
         int latSegments = segments / 2;
+        if (latSegments < 2) latSegments = 2;
         float deltaTheta = Mth.TWO_PI / segments;
         float deltaPhi = Mth.PI / latSegments;
 
         for (int i = 0; i < latSegments; i++) {
             float phi1 = i * deltaPhi - Mth.HALF_PI;
             float phi2 = (i + 1) * deltaPhi - Mth.HALF_PI;
+
+            // 原始几何数据（保持不可变）
             float sinPhi1 = Mth.sin(phi1), cosPhi1 = Mth.cos(phi1);
             float sinPhi2 = Mth.sin(phi2), cosPhi2 = Mth.cos(phi2);
-            float r1 = radius * cosPhi1;
-            float r2 = radius * cosPhi2;
-            float v1 = (float) i / latSegments * vScale;
-            float v2 = (float) (i + 1) / latSegments * vScale;
+
+            float r1 = Math.max(0f, radius * cosPhi1);
+            float r2 = Math.max(0f, radius * cosPhi2);
+
+            float v1 = Mth.clamp((float) i / latSegments, 0f, 1f) * vScale + vOffset;
+            float v2 = Mth.clamp((float) (i + 1) / latSegments, 0f, 1f) * vScale + vOffset;
 
             for (int j = 0; j < segments; j++) {
                 float theta1 = j * deltaTheta;
                 float theta2 = (j + 1) * deltaTheta;
                 float sinTheta1 = Mth.sin(theta1), cosTheta1 = Mth.cos(theta1);
                 float sinTheta2 = Mth.sin(theta2), cosTheta2 = Mth.cos(theta2);
-                float u1 = (float) j / segments * uScale;
-                float u2 = (float) (j + 1) / segments * uScale;
+                float u1 = Mth.clamp((float) j / segments, 0f, 1f) * uScale + uOffset;
+                float u2 = Mth.clamp((float) (j + 1) / segments, 0f, 1f) * uScale + uOffset;
 
+                // 顶点坐标（不变）
                 float x1 = r1 * cosTheta1, y1 = radius * sinPhi1, z1 = r1 * sinTheta1;
                 float x2 = r2 * cosTheta1, y2 = radius * sinPhi2, z2 = r2 * sinTheta1;
                 float x3 = r2 * cosTheta2, y3 = radius * sinPhi2, z3 = r2 * sinTheta2;
                 float x4 = r1 * cosTheta2, y4 = radius * sinPhi1, z4 = r1 * sinTheta2;
 
-                float nx1 = cosPhi1 * cosTheta1, nz1 = cosPhi1 * sinTheta1;
-                float nx2 = cosPhi2 * cosTheta1, nz2 = cosPhi2 * sinTheta1;
-                float nx3 = cosPhi2 * cosTheta2, nz3 = cosPhi2 * sinTheta2;
-                float nx4 = cosPhi1 * cosTheta2, nz4 = cosPhi1 * sinTheta2;
+                // 初始法线
+                float nx1 = cosPhi1 * cosTheta1, ny1 = sinPhi1, nz1 = cosPhi1 * sinTheta1;
+                float nx2 = cosPhi2 * cosTheta1, ny2 = sinPhi2, nz2 = cosPhi2 * sinTheta1;
+                float nx3 = cosPhi2 * cosTheta2, ny3 = sinPhi2, nz3 = cosPhi2 * sinTheta2;
+                float nx4 = cosPhi1 * cosTheta2, ny4 = sinPhi1, nz4 = cosPhi1 * sinTheta2;
+
+                // 法线归一化（使用独立副本，不修改原 sinPhi）
+                float len1 = (float) Math.sqrt(nx1*nx1 + ny1*ny1 + nz1*nz1);
+                float len2 = (float) Math.sqrt(nx2*nx2 + ny2*ny2 + nz2*nz2);
+                float len3 = (float) Math.sqrt(nx3*nx3 + ny3*ny3 + nz3*nz3);
+                float len4 = (float) Math.sqrt(nx4*nx4 + ny4*ny4 + nz4*nz4);
+
+                if (len1 > 1e-6f) { nx1 /= len1; ny1 /= len1; nz1 /= len1; }
+                if (len2 > 1e-6f) { nx2 /= len2; ny2 /= len2; nz2 /= len2; }
+                if (len3 > 1e-6f) { nx3 /= len3; ny3 /= len3; nz3 /= len3; }
+                if (len4 > 1e-6f) { nx4 /= len4; ny4 /= len4; nz4 /= len4; }
 
                 QuadRenderer.render(pose, consumer,
                         center.x() + x1, center.y() + y1, center.z() + z1,
                         center.x() + x2, center.y() + y2, center.z() + z2,
                         center.x() + x3, center.y() + y3, center.z() + z3,
                         center.x() + x4, center.y() + y4, center.z() + z4,
-                        nx1, sinPhi1, nz1,
-                        nx2, sinPhi2, nz2,
-                        nx3, sinPhi2, nz3,
-                        nx4, sinPhi1, nz4,
+                        nx1, ny1, nz1,
+                        nx2, ny2, nz2,
+                        nx3, ny3, nz3,
+                        nx4, ny4, nz4,
                         r, g, b, a, overlay, light,
                         u1, v1, u1, v2, u2, v2, u2, v1);
             }
         }
     }
-
+    /**
+     * 球体：带UV缩放（使用默认 UV 缩放 1.0），球心在原点
+     */
+    public static void render(PoseStack.Pose pose, VertexConsumer consumer, Vector3f center, float radius, int segments,
+                              int r, int g, int b, int a, int overlay, int light,int uScale, float vScale) {
+        render(pose, consumer, center, radius, segments, r, g, b, a, overlay, light, uScale,vScale,1f, 1f);
+    }
     /**
      * 球体：带UV缩放（使用默认 UV 缩放 1.0），球心在原点
      */
     public static void render(PoseStack.Pose pose, VertexConsumer consumer, Vector3f center, float radius, int segments,
                               int r, int g, int b, int a, int overlay, int light) {
-        render(pose, consumer, center, radius, segments, r, g, b, a, overlay, light, 1f, 1f);
+        render(pose, consumer, center, radius, segments, r, g, b, a, overlay, light, 1f, 1f,1f,1f);
     }
 
     /**
@@ -204,17 +228,24 @@ public class SphereRenderer {
      * 球体：带UV缩放，接受 ARGB 颜色（使用 QUADS 模式）
      */
     public static void render(PoseStack.Pose pose, VertexConsumer consumer, Vector3f center, float radius, int segments,
-                              int argb, int overlay, int light, float uScale, float vScale) {
+                              int argb, int overlay, int light, float uScale, float vScale,float uOffset, float vOffset) {
         render(pose, consumer, center, radius, segments,
-                FastColor.ARGB32.red(argb), FastColor.ARGB32.green(argb), FastColor.ARGB32.blue(argb), FastColor.ARGB32.alpha(argb), overlay, light, uScale, vScale);
+                FastColor.ARGB32.red(argb), FastColor.ARGB32.green(argb), FastColor.ARGB32.blue(argb), FastColor.ARGB32.alpha(argb), overlay, light, uScale, vScale,uOffset, vOffset);
     }
 
     /**
      * 球体：使用默认 UV 缩放，接受 ARGB 颜色
      */
     public static void render(PoseStack.Pose pose, VertexConsumer consumer, Vector3f center, float radius, int segments,
+                              int argb, int overlay, int light,float uScale, float vScale) {
+        render(pose, consumer, center, radius, segments, argb, overlay, light, uScale,vScale,1f, 1f);
+    }
+    /**
+     * 球体：使用默认 UV 缩放，接受 ARGB 颜色
+     */
+    public static void render(PoseStack.Pose pose, VertexConsumer consumer, Vector3f center, float radius, int segments,
                               int argb, int overlay, int light) {
-        render(pose, consumer, center, radius, segments, argb, overlay, light, 1f, 1f);
+        render(pose, consumer, center, radius, segments, argb, overlay, light, 1f,1f,1f, 1f);
     }
 
     /**

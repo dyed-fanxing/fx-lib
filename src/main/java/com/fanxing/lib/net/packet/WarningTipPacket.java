@@ -4,7 +4,7 @@ import com.fanxing.lib.FxLib;
 import com.fanxing.lib.client.render.effect.EffectRendererHandler;
 import com.fanxing.lib.client.render.effect.WarningTip;
 import com.fanxing.lib.util.ByteBufUtils;
-import com.fanxing.lib.util.ParametricCurveType;
+import com.fanxing.lib.util.math.ParametricCurveType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

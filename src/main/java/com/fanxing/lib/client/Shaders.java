@@ -19,6 +19,7 @@ public class Shaders {
 
     private static ShaderInstance entityTranslucentEmissiveAdjustableShader;
     public static ShaderInstance screenShader;
+    public static ShaderInstance depthDebugShader;
 
     public static ShaderInstance getWhiteEntityShader() {
         return whiteEntityShader;
@@ -31,6 +32,10 @@ public class Shaders {
     }
     public static ShaderInstance getEntityTranslucentEmissiveAdjustableShader() { return entityTranslucentEmissiveAdjustableShader;}
     public static ShaderInstance getScreenShader() { return screenShader;}
+
+    public static ShaderInstance getDepthDebugShader() {
+        return depthDebugShader;
+    }
 
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
@@ -64,8 +69,16 @@ public class Shaders {
                 ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "screen"),
                 DefaultVertexFormat.NEW_ENTITY
         ), shader -> screenShader = shader);
-
-
+        event.registerShader(new ShaderInstance(
+                event.getResourceProvider(),
+                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "screen"),
+                DefaultVertexFormat.NEW_ENTITY
+        ), shader -> screenShader = shader);
+        event.registerShader(new ShaderInstance(
+                event.getResourceProvider(),
+                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "depth_debug"),
+                DefaultVertexFormat.NEW_ENTITY
+        ), shader -> depthDebugShader = shader);
     }
 
 }

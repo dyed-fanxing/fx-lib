@@ -12,4 +12,18 @@ public interface TransparencyShard {
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
+
+    RenderStateShard.TransparencyStateShard PREMULTIPLIED_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("premultiplied_transparency", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    }, () ->
+    {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    });
+
+
+
+
+
 }

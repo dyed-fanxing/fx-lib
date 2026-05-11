@@ -1,4 +1,4 @@
-package com.fanxing.lib.client.particle;
+package com.fanxing.lib.client.particle.quad;
 
 import com.fanxing.lib.particle.options.GrowTrackEntityOption;
 import com.mojang.blaze3d.vertex.VertexConsumer;

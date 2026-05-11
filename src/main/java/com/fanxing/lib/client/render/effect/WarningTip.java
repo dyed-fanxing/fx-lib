@@ -4,7 +4,7 @@ import com.fanxing.lib.client.render.shape.CircleRenderer;
 import com.fanxing.lib.client.render.shape.CubeRenderer;
 import com.fanxing.lib.client.render.shape.CylinderRenderer;
 import com.fanxing.lib.client.render.shape.QuadRenderer;
-import com.fanxing.lib.util.CurvesUtils;
+import com.fanxing.lib.util.math.EaseCurvesUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.Direction;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
@@ -425,7 +424,7 @@ public abstract class WarningTip extends Effect {
 
         @Override
         protected float getProgress(float partialTick) {
-            return CurvesUtils.riseHoldFallBezier((age + partialTick) / lifetime, 0.8f, 0.2f);
+            return EaseCurvesUtils.riseHoldFallBezier((age + partialTick) / lifetime, 0.8f, 0.2f);
         }
 
         protected int getAlpha(float partialTick) {

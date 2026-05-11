@@ -1,4 +1,4 @@
-package com.fanxing.lib.client.render.component;
+package com.fanxing.lib.client.render.data;
 
 import net.minecraft.world.phys.Vec3;
 
