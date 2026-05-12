@@ -22,5 +22,6 @@
   "gui.fx_lib.look_at": "看向",
   "gui.fx_lib.mouse": "鼠标",
   "attribute.name.fx_lib.generic.target_invulnerability_ticks": "目标无敌时间",
-  "attribute.name.fx_lib.generic.self_invulnerability_ticks": "自身无敌时间"
+  "attribute.name.fx_lib.generic.self_invulnerability_ticks": "自身无敌时间",
+  "util.math.fx_lib.ease.liner": "线性",
 }

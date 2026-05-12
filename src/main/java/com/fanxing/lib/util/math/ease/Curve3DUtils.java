@@ -1,4 +1,4 @@
-package com.fanxing.lib.util.math;
+package com.fanxing.lib.util.math.ease;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;

@@ -1,4 +1,4 @@
-package com.fanxing.lib.phys.motion;
+package com.fanxing.lib.util.phys.motion;
 
 import com.fanxing.lib.net.packet.SyncMotionPayload;
 import io.netty.buffer.Unpooled;

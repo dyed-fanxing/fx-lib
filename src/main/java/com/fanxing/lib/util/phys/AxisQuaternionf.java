@@ -1,4 +1,4 @@
-package com.fanxing.lib.phys;
+package com.fanxing.lib.util.phys;
 
 import com.mojang.math.Axis;
 import org.joml.Quaternionf;

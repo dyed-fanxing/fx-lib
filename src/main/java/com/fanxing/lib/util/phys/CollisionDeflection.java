@@ -1,4 +1,4 @@
-package com.fanxing.lib.phys;
+package com.fanxing.lib.util.phys;
 
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;

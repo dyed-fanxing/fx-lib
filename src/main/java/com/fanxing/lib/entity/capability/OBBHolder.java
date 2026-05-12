@@ -1,6 +1,6 @@
 package com.fanxing.lib.entity.capability;
 
-import com.fanxing.lib.phys.OBB;
+import com.fanxing.lib.util.phys.OBB;
 import net.minecraft.world.phys.AABB;
 
 /**

@@ -2,6 +2,7 @@ package com.fanxing.lib.client.particle;
 
 import com.fanxing.lib.client.particle.property.RotationStrategy;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -19,12 +20,15 @@ import org.joml.Quaternionf;
  * - 尺寸字段供子类使用
  */
 public abstract class BaseParticle extends Particle {
-    protected float lerpX;
-    protected float lerpY;
-    protected float lerpZ;
+    public static final FloatUnaryOperator ONE = t -> 1f;
+    public static final FloatUnaryOperator ZERO = t -> 0f;
+
+    protected double lerpX;
+    protected double lerpY;
+    protected double lerpZ;
     protected RotationStrategy rotationStrategy = null;
     // 直接存储固定旋转（单位四元数）
-    protected Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
+    protected final Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
 
 
     public BaseParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
@@ -41,11 +45,10 @@ public abstract class BaseParticle extends Particle {
     /**
      * 获取插值后的世界坐标（用于渲染）。
      */
-    protected void calLerpPos(Camera camera, float partialTick) {
-        Vec3 cameraPos = camera.getPosition();
-        lerpX = (float) (Mth.lerp(partialTick, this.xo, this.x) - cameraPos.x);
-        lerpY = (float) (Mth.lerp(partialTick, this.yo, this.y) - cameraPos.y);
-        lerpZ = (float) (Mth.lerp(partialTick, this.zo, this.z) - cameraPos.z);
+    protected void calLerpPos(float partialTick) {
+        lerpX = Mth.lerp(partialTick, this.xo, this.x);
+        lerpY = Mth.lerp(partialTick, this.yo, this.y);
+        lerpZ = Mth.lerp(partialTick, this.zo, this.z);
     }
 
     @Override
@@ -60,10 +63,14 @@ public abstract class BaseParticle extends Particle {
      */
     @Override
     public final void render(@NotNull VertexConsumer consumer, @NotNull Camera camera, float partialTick) {
-        calLerpPos(camera, partialTick);
+        calLerpPos(partialTick);
+        Vec3 cameraPos = camera.getPosition();
+        float cx = (float) (lerpX - cameraPos.x);
+        float cy = (float) (lerpY - cameraPos.y);
+        float cz = (float) (lerpZ - cameraPos.z);
         if (rotationStrategy != null) rotationStrategy.getLerpQuaternion(camera, partialTick, rotation);
-        preRender(consumer, camera, partialTick);
-        render(consumer, partialTick);
+        preRender(consumer,cx,cy,cz, camera, partialTick);
+        render(consumer,cx,cy,cz, partialTick);
     }
 
 
@@ -75,9 +82,9 @@ public abstract class BaseParticle extends Particle {
      * @param consumer    顶点消费者
      * @param partialTick 帧间插值（可用于额外的插值需求）
      */
-    public abstract void render(@NotNull VertexConsumer consumer, float partialTick);
+    public abstract void render(@NotNull VertexConsumer consumer,float centerX, float centerY, float centerZ, float partialTick);
 
-    public void preRender(VertexConsumer consumer, Camera camera, float partialTick) {
+    public void preRender(VertexConsumer consumer,float centerX, float centerY, float centerZ, Camera camera, float partialTick) {
     }
 
     public float getProgress(float partialTick) {
@@ -112,5 +119,7 @@ public abstract class BaseParticle extends Particle {
     public void setColor(int r, int g, int b) {
         this.setColor(r / 255f, g / 255f, b / 255f);
     }
+
+
 
 }

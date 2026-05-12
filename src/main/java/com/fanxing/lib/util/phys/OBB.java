@@ -1,4 +1,4 @@
-package com.fanxing.lib.phys;
+package com.fanxing.lib.util.phys;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;

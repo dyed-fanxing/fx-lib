@@ -10,10 +10,12 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Math;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -33,42 +35,57 @@ public abstract class SpriteQuadParticle extends BaseParticle {
 
 
     @Override
-    public void render(@NotNull VertexConsumer consumer, Vector3f center, Quaternionf rotation, float partialTick) {
+    public void render(@NotNull VertexConsumer consumer, float cx, float cy, float cz, float partialTick) {
         float progress = getProgress(partialTick);
-        float halfW = getWidth(progress) * 0.5f;
-        float halfH = getLength(progress) * 0.5f;
-        // 局部坐标（未旋转）
-        Vector3f br = new Vector3f(halfW, -halfH, 0);
-        Vector3f tr = new Vector3f(halfW, halfH, 0);
-        Vector3f tl = new Vector3f(-halfW, halfH, 0);
-        Vector3f bl = new Vector3f(-halfW, -halfH, 0);
-        // 应用旋转并平移到世界中心
-        br.rotate(rotation).add(center);
-        tr.rotate(rotation).add(center);
-        tl.rotate(rotation).add(center);
-        bl.rotate(rotation).add(center);
+        float hl = getLength(partialTick) * 0.5f;
+        float hh = getHeight(partialTick) * 0.5f;
+
+        float qx = rotation.x, qy = rotation.y, qz = rotation.z, qw = rotation.w;
+        float xx = qx * qx, yy = qy * qy, zz = qz * qz, ww = qw * qw;
+        float xy = qx * qy, xz = qx * qz, yz = qy * qz;
+        float xw = qx * qw, yw = qy * qw, zw = qz * qw;
+
+        float m00 = ww + xx - yy - zz;
+        float m01 = 2 * (xy - zw);
+        float m10 = 2 * (xy + zw);
+        float m11 = ww - xx + yy - zz;
+        float m20 = 2 * (xz - yw);
+        float m21 = 2 * (yz + xw);
+
+        float brx = org.joml.Math.fma(m00, hl, m01 * -hh) + cx;
+        float bry = org.joml.Math.fma(m10, hl, m11 * -hh) + cy;
+        float brz = org.joml.Math.fma(m20, hl, m21 * -hh) + cz;
+
+        float trx = org.joml.Math.fma(m00, hl, m01 * hh) + cx;
+        float try_ = org.joml.Math.fma(m10, hl, m11 * hh) + cy;
+        float trz = org.joml.Math.fma(m20, hl, m21 * hh) + cz;
+
+        float tlx = org.joml.Math.fma(m00, -hl, m01 * hh) + cx;
+        float tly = org.joml.Math.fma(m10, -hl, m11 * hh) + cy;
+        float tlz = org.joml.Math.fma(m20, -hl, m21 * hh) + cz;
+
+        float blx = org.joml.Math.fma(m00, -hl, m01 * -hh) + cx;
+        float bly = org.joml.Math.fma(m10, -hl, m11 * -hh) + cy;
+        float blz = Math.fma(m20, -hl, m21 * -hh) + cz;
+
         QuadParticleRenderer.render(consumer,
-                br.x(), br.y(), br.z(),
-                tr.x(), tr.y(), tr.z(),
-                tl.x(), tl.y(), tl.z(),
-                bl.x(), bl.y(), bl.z(),
+                brx, bry, brz, trx, try_, trz, tlx, tly, tlz, blx, bly, blz,
                 (int) (rCol * 255), (int) (gCol * 255), (int) (bCol * 255), (int) (alpha * 255), getLightColor(partialTick),
                 sprite.getU0(),sprite.getV1(),sprite.getU1(),sprite.getV0());
     }
 
     @Override
     public @NotNull AABB getRenderBoundingBox(float partialTick) {
-        Vector3f pos = getInterpolatedPos(partialTick);
-        float progress = getProgress(partialTick);
-        double cx = pos.x;
-        double cy = pos.y;
-        double cz = pos.z;
-        float hw = getWidth(progress) * 0.5f;
-        float hh = getLength(progress) * 0.5f;
-        return new AABB(cx - hw, cy - hh, cz - hw, cx + hw, cy + hh, cz + hw);
+        calLerpPos(partialTick);
+        float t = getProgress(partialTick);
+        float hl = getLength(t) * 0.5f;
+        float hh = getHeight(t) * 0.5f;
+        float maxHalf = Mth.sqrt(hl * hl + hh * hh);
+        return new AABB(lerpX - maxHalf, lerpY - maxHalf, lerpZ - maxHalf,
+                lerpX + maxHalf, lerpY + maxHalf, lerpZ + maxHalf);
     }
 
-    protected float getWidth(float t) {
+    protected float getHeight(float t) {
         return 1f;
     }
 

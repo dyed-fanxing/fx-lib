@@ -1,7 +1,7 @@
 package com.fanxing.lib;
 
 import com.fanxing.lib.integration.IntegrationFx;
-import com.fanxing.lib.phys.motion.PhysicsMotionModel;
+import com.fanxing.lib.util.phys.motion.PhysicsMotionModel;
 import com.fanxing.lib.registry.*;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;

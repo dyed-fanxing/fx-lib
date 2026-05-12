@@ -36,16 +36,15 @@ public class ColorPicker extends AbstractWidget {
     protected static final int BOX_HEIGHT = 20;
     protected static final int ALPHA_BAR_WIDTH = 20;
     protected static final int BORDER_THICKNESS = 20;      // 边框厚度
-    protected static final int MIN_SV_SIZE = 100;
     private static final Logger log = LoggerFactory.getLogger(ColorPicker.class);
 
     protected int svSize;               // SV 方块边长
     protected int outerSize;            // 外正方形边长 = svSize + 2*(BORDER_THICKNESS+INNER_GAP)
     protected int pathLength;           // 中轴线正方形边长 = outerSize - BORDER_THICKNESS
 
-    protected float[] hsv = new float[]{0f, 1f, 1f};
+    protected float[] hsv;
     protected int currentColor;
-    protected int alpha = 255;
+    protected int alpha;
     protected final Consumer<Integer> onColorChange;
 
     protected ResourceLocation alphaBarTexture;   // 透明度条纹理
@@ -540,5 +539,9 @@ public class ColorPicker extends AbstractWidget {
         float dxp = px - projX;
         float dyp = py - projY;
         return dxp * dxp + dyp * dyp;
+    }
+
+    public int getColor() {
+        return currentColor;
     }
 }

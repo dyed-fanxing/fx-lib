@@ -1,4 +1,4 @@
-package com.fanxing.lib.phys.motion;
+package com.fanxing.lib.util.phys.motion;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;

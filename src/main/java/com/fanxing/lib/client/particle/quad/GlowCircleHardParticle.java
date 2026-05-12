@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class GlowCircleHardParticle extends FreeQuadParticle{
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID,"textures/particle/glow_circle_hard.png");
     public GlowCircleHardParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
-        super(level, x, y, z, vx, vy, vz);
+        super(level, x, y, z);
         setRotationProperty(RotationStrategy.LOOKAT_XYZ);
     }
 

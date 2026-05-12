@@ -1,6 +1,6 @@
 package com.fanxing.lib.client.debug;
 
-import com.fanxing.lib.phys.OBB;
+import com.fanxing.lib.util.phys.OBB;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.world.phys.AABB;

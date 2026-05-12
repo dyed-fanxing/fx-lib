@@ -6,7 +6,7 @@ import com.fanxing.lib.entity.capability.OBBHolder;
 import com.fanxing.lib.entity.capability.OBBRotationCollider;
 import com.fanxing.lib.entity.capability.QuaternionRotatable;
 import com.fanxing.lib.entity.capability.Rollable;
-import com.fanxing.lib.phys.OBB;
+import com.fanxing.lib.util.phys.OBB;
 import com.fanxing.lib.util.RotUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

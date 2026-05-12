@@ -1,4 +1,4 @@
-package com.fanxing.lib.phys.kinematics;
+package com.fanxing.lib.util.phys.kinematics;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;

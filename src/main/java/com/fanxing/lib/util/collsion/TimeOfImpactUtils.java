@@ -1,6 +1,6 @@
 package com.fanxing.lib.util.collsion;
 
-import com.fanxing.lib.phys.OBB;
+import com.fanxing.lib.util.phys.OBB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;

@@ -1,6 +1,6 @@
 package com.fanxing.lib.util.collsion;
 
-import com.fanxing.lib.phys.OBB;
+import com.fanxing.lib.util.phys.OBB;
 import com.fanxing.lib.entity.capability.OBBHolder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;

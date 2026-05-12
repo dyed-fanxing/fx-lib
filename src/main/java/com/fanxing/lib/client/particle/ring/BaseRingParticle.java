@@ -21,32 +21,55 @@ import java.util.List;
  * 纹理 UV 边界可通过 setUV 动态修改（例如实现滚动）。
  */
 public abstract class BaseRingParticle extends BaseParticle {
-    protected List<RingLayer> layers;
+    protected final List<RingLayer> layers;
     protected float startAngle;
     protected float endAngle;
 
-    protected int segments;
+    protected final int segments;
 
-    protected FloatUnaryOperator uMin = t -> 0f;
-    protected FloatUnaryOperator vMin = t -> 0f;
-    protected FloatUnaryOperator uMax = t -> 1f;
-    protected FloatUnaryOperator vMax = t -> 1f;
-    protected FloatUnaryOperator xScale = t -> 1f;
-    protected FloatUnaryOperator yScale = t -> 1f;
-    protected FloatUnaryOperator zScale = t -> 1f;
+    protected FloatUnaryOperator uMin = ZERO;
+    protected FloatUnaryOperator vMin = ZERO;
+    protected FloatUnaryOperator uMax = ONE;
+    protected FloatUnaryOperator vMax = ONE;
+    protected FloatUnaryOperator xScale = ONE;
+    protected FloatUnaryOperator yScale = ONE;
+    protected FloatUnaryOperator zScale = ONE;
 
-    protected FloatUnaryOperator alphaFactory = t -> 1f;
+    protected FloatUnaryOperator alphaFactory = ONE;
 
+    protected float[] layerDist;
 
-    public BaseRingParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz, List<RingLayer> layers, float startAngle, float endAngle) {
+    public BaseRingParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz, List<RingLayer> layers, float startAngle, float endAngle,int segments) {
         super(level, x, y, z, vx, vy, vz);
         this.layers = layers;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
-        segments = ConfigFxLib.Client.SEGMENTS.getAsInt();
+        this.segments = segments;
+        if (layers == null || layers.size() < 2) return;
+        int n = layers.size();
+        layerDist = new float[n];
+        layerDist[0] = 0f;
+        float totalDist = 0f;
+        for (int i = 1; i < n; i++) {
+            RingLayer prev = layers.get(i - 1);
+            RingLayer curr = layers.get(i);
+            float dr = curr.radius - prev.radius;
+            float dz = curr.zOffset - prev.zOffset;
+            totalDist += (float) Math.sqrt(dr * dr + dz * dz);
+            layerDist[i] = totalDist;
+        }
+        if (totalDist > 0) {
+            float inv = 1f / totalDist;
+            for (int i = 0; i < n; i++) {
+                layerDist[i] *= inv;
+            }
+        }
+    }
+    public BaseRingParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz, List<RingLayer> layers, float startAngle, float endAngle) {
+        this(level, x, y, z, vx, vy, vz, layers, startAngle, endAngle,ConfigFxLib.Client.SEGMENTS.getAsInt() );
     }
     public BaseRingParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz, List<RingLayer> layers) {
-        this(level, x, y, z, vx, vy, vz,layers,0f,Mth.TWO_PI);
+        this(level, x, y, z, vx, vy, vz,layers,0f,Mth.TWO_PI,ConfigFxLib.Client.SEGMENTS.getAsInt());
     }
 
 
@@ -61,10 +84,10 @@ public abstract class BaseRingParticle extends BaseParticle {
     }
 
     @Override
-    public void render(@NotNull VertexConsumer consumer, Vector3f center, Quaternionf rotation, float partialTick) {
+    public void render(@NotNull VertexConsumer consumer, float cx,float cy,float cz,float partialTick) {
         float progress = getProgress(partialTick);
         setAlpha(alphaFactory.apply(progress));
-        RingFanParticleRenderer.render(consumer, center, getLayers(), startAngle, endAngle, segments, rotation,
+        RingFanParticleRenderer.render(consumer, cx,cy,cz, getLayers(),layerDist,startAngle, endAngle, segments, rotation,
                 xScale.apply(progress),yScale.apply(progress),zScale.apply(progress), getLightColor(partialTick),
                 uMin.apply(progress),vMin.apply(progress), uMax.apply(progress),vMax.apply(progress),alpha);
     }
@@ -102,4 +125,8 @@ public abstract class BaseRingParticle extends BaseParticle {
     public void setAlphaFactory(FloatUnaryOperator alphaFactory) {
         this.alphaFactory = alphaFactory;
     }
+
+
+
+
 }
