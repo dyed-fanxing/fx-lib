@@ -1,16 +1,15 @@
 package com.fanxing.lib;
 
+import com.fanxing.lib.client.render.instance.InstanceModelRegistry;
 import com.fanxing.lib.integration.IntegrationFx;
-import com.fanxing.lib.util.phys.motion.PhysicsMotionModel;
 import com.fanxing.lib.registry.*;
+import com.fanxing.lib.util.phys.motion.PhysicsMotionModel;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -33,7 +32,8 @@ public class FxLib {
     // 模组类的构造函数是模组加载时运行的第一段代码
     public FxLib(IEventBus modEventBus, ModContainer modContainer) {
         // 注册commonSetup方法用于模组加载
-        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::onCommonSetup);
+        modEventBus.addListener(this::onClientSetup);
 
 
         AttributesFxLib.register(modEventBus);           // 属性注册
@@ -72,11 +72,10 @@ public class FxLib {
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
         PhysicsMotionModel.registry();
-
     }
 
-    // 通用设置方法
-    private void commonSetup(final FMLCommonSetupEvent event) {
+    // 客户端和服务端 所有静态注册表已经注册完毕，可以安全查询
+    private void onCommonSetup(final FMLCommonSetupEvent event) {
     }
 
     // 将示例方块物品添加到建筑方块标签页
@@ -92,17 +91,11 @@ public class FxLib {
     }
 
 
-    // 客户端模组事件订阅类
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
-    public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event) {
-            LOGGER.debug("客户端设置初始化");
-            LOGGER.debug("MINECRAFT用户名 >> {}", Minecraft.getInstance().getUser().getName());
-
-        }
+    public void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            InstanceModelRegistry.uploadAll();
+        });
     }
-
 
 
 }

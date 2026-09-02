@@ -68,16 +68,16 @@ public class ColorPicker extends AbstractWidget {
 
 
         hsv = ColorUtils.rgbToHsv(init);
-        boxes[0] = new IntegerEditBox(font, 0, 0, 0, BOX_HEIGHT, Component.empty(),
-                0, 255, 1, alpha, v -> updateFromBoxInput());
+        boxes[0] = new IntegerEditBox(0, 0, 0, BOX_HEIGHT, Component.empty(),
+                0, 255, 1, alpha, v -> updateFromBoxInput(),font);
         boxes[0].setHint(Component.translatable("gui." + MOD_ID + ".color.alpha"));
         boxes[0].setTooltip(Tooltip.create(Component.translatable("gui." + MOD_ID + ".color.alpha")));
         // 先解析出正确的 hsv 和 alpha，供后续纹理生成使用
 
         // boxes[1-3] = R/G/B or H/S/V
         for (int i = 0; i < 3; i++) {
-            boxes[i + 1] = new IntegerEditBox(font, 0, 0, 0, BOX_HEIGHT, Component.empty(),
-                    0, ColorMode.HSV.max[i], 1, Math.round(hsv[i]*360), v -> updateFromBoxInput())
+            boxes[i + 1] = new IntegerEditBox(0, 0, 0, BOX_HEIGHT, Component.empty(),
+                    0, ColorMode.HSV.max[i], 1, Math.round(hsv[i]*360), v -> updateFromBoxInput(),font)
                     .wrap(i == 0);
             boxes[i + 1].setTooltip(Tooltip.create(Component.translatable(ColorMode.HSV.names[i])));
         }

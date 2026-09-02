@@ -1,6 +1,6 @@
 package com.fanxing.lib.client.render.component;
 
-import com.fanxing.lib.client.render.shape.TrailPoint;
+import com.fanxing.lib.client.render.geometry.TrailPoint;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;

@@ -9,6 +9,8 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 public class LabelEditBox extends AbstractWidget {
     private final Font font;
     private final EditBox editBox;
@@ -28,10 +30,11 @@ public class LabelEditBox extends AbstractWidget {
         this.inputWidth = inputWidth;
         this.gap = gap;
         this.mode = mode;
-        updateLayout();
     }
 
-    private void updateLayout() {
+    @Override
+    public void setX(int x) {
+        super.setX(x);
         int fontWidth = font.width(label.getString());
         inputWidth = inputWidth==0?width - labelWidth - gap:inputWidth; // 输入框可用宽度
         switch (mode) {
@@ -39,22 +42,19 @@ public class LabelEditBox extends AbstractWidget {
             case SPREAD ->  labelX = 0;
         }
         editBox.setX(getX() + labelWidth + gap);
-        editBox.setY(getY());
-        editBox.setHeight(height);
         editBox.setWidth(inputWidth); // 根据模式计算宽度
         editBox.moveCursorToStart(false);
     }
 
     @Override
-    public void setX(int x) {
-        super.setX(x);
-        updateLayout();
-    }
-
-    @Override
     public void setY(int y) {
         super.setY(y);
-        updateLayout();
+        editBox.setY(getY());
+        editBox.setHeight(height);
+
+        // 选择随机模式，出现对应数量的部件，
+        // 部件值变更的时候，直接根据随机模式重新创建
+
     }
 
     @Override
@@ -109,4 +109,6 @@ public class LabelEditBox extends AbstractWidget {
     // 便捷方法
     public String getText() { return editBox.getValue(); }
     public void setText(String text) { editBox.setValue(text); }
+
+
 }

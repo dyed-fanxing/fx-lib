@@ -1,16 +1,12 @@
 package com.fanxing.lib.client;
 
-import com.fanxing.lib.client.particle.CustomWhiteAshNoGravityParticle;
-import com.fanxing.lib.client.particle.CustomWhiteAshParticle;
 import com.fanxing.lib.net.packet.*;
-import com.fanxing.lib.registry.ParticleTypesFxLib;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -35,16 +31,6 @@ public class Setup {
     public static void onAttributeCreate(EntityAttributeCreationEvent event) {
     }
 
-
-    /**
-     * 监听客户端注册粒子提供者事件
-     * @param event 三种注册方式
-     */
-    @SubscribeEvent
-    public static void registerParticleProviderHandler(final RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleTypesFxLib.CUSTOM_WHITE_ASH.get(), CustomWhiteAshParticle.Provider::new);
-        event.registerSpriteSet(ParticleTypesFxLib.CUSTOM_NO_GRAVITY_WHITE_ASH.get(), CustomWhiteAshNoGravityParticle.Provider::new);
-    }
 
     /**
      * 监听客户端服务端注册网络发包事件
@@ -84,8 +70,7 @@ public class Setup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-        });
+        event.enqueueWork(() -> {});
     }
 }
 

@@ -1,0 +1,45 @@
+#version 430 core
+layout(local_size_x = 256) in;
+
+layout(std430, binding = 0) buffer Data {
+    float keys[];
+};
+
+uniform int N;
+uniform int stage;
+uniform int pass;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) return;
+
+    int pairDistance = 1 << (stage - pass);
+    int blockWidth   = 2 * pairDistance;
+    int leftID       = (int(id) & ~(blockWidth - 1)) + (int(id) & (pairDistance - 1));
+    int rightID      = leftID + pairDistance;
+
+    int li = leftID  * 4;
+    int ri = rightID * 4;
+
+    float l_layer = keys[li];
+    float l_order = keys[li + 1];
+    float r_layer = keys[ri];
+    float r_order = keys[ri + 1];
+
+    // 简洁正确的比较：layer 小优先，同层 order 小优先
+    bool lessThan = bool(l_layer < r_layer || (l_layer == r_layer && l_order < r_order));
+    int  bitValue = int(id) & pairDistance;
+    bool bit      = bool(bitValue != 0);
+
+    if (lessThan != bit) {
+        float t0 = keys[li],     t1 = keys[li + 1], t2 = keys[li + 2], t3 = keys[li + 3];
+        keys[li]     = keys[ri];
+        keys[li + 1] = keys[ri + 1];
+        keys[li + 2] = keys[ri + 2];
+        keys[li + 3] = keys[ri + 3];
+        keys[ri]     = t0;
+        keys[ri + 1] = t1;
+        keys[ri + 2] = t2;
+        keys[ri + 3] = t3;
+    }
+}

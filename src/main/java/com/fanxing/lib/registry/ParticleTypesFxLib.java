@@ -1,9 +1,6 @@
 package com.fanxing.lib.registry;
 
 import com.fanxing.lib.FxLib;
-import com.fanxing.lib.particle.options.GrowOption;
-import com.fanxing.lib.particle.options.GrowTrackEntityOption;
-import com.fanxing.lib.particle.options.TrackEntityParticleOption;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -25,15 +22,20 @@ public class ParticleTypesFxLib {
 
     public static final Supplier<SimpleParticleType> CUSTOM_WHITE_ASH = register("custom_white_ash", false);
     public static final Supplier<SimpleParticleType> CUSTOM_NO_GRAVITY_WHITE_ASH = register("custom_no_gravity_white_ash", false);
+    public static final Supplier<SimpleParticleType> DOT = register("dot", false);
+    public static final Supplier<SimpleParticleType> ORB = register("orb", false);
+    public static final Supplier<SimpleParticleType> ORB_GLOW_HARD = register("orb_glow_hard", false);
+    public static final Supplier<SimpleParticleType> ORB_GLOW = register("orb_glow", false);
 
-    // 随生命周期变大的粒子
-    public static final DeferredHolder<ParticleType<?>, ParticleType<GrowTrackEntityOption>> BALL_GROW = register("ball_grow", false,
-            GrowTrackEntityOption.MAP_CODEC,GrowTrackEntityOption.STREAM_CODEC);
-    // 光环
-    public static final DeferredHolder<ParticleType<?>, ParticleType<GrowOption>> HALO_SCALE = register("halo_scale", false,
-            GrowOption.MAP_CODEC,GrowOption.STREAM_CODEC);
+    public static final Supplier<SimpleParticleType> ORB_C2 = register("orb_c2", false);
+
+    public static final Supplier<SimpleParticleType> RING_CHANGE = register("ring_charge", false);
+    public static final Supplier<SimpleParticleType> SHOCK_WAVE_GLOW = register("shock_wave_glow", false);
+
     // 光束拖尾
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> LIGHT_STREAK = register("light_streak", false);
+
+
 
 
 

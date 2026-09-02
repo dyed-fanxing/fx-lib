@@ -1,0 +1,38 @@
+#version 430 core
+layout(local_size_x = 256) in;
+
+layout(std430, binding = 0) buffer Data {
+    float keys[]; // 每元素 2 个 float: distance, index
+};
+
+uniform int N;
+uniform int stage;
+uniform int pass;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= N) return;
+
+    int pairDistance = 1 << (stage - pass);
+    int blockWidth   = 2 * pairDistance;
+    int leftID       = (int(id) & ~(blockWidth - 1)) + (int(id) & (pairDistance - 1));
+    int rightID      = leftID + pairDistance;
+
+    int li = leftID  * 2;
+    int ri = rightID * 2;
+
+    float l_dist = keys[li];
+    float r_dist = keys[ri];
+
+    bool lessThan = bool(l_dist > r_dist);   // 远→近
+    int  bitValue = int(id) & pairDistance;
+    bool bit      = bool(bitValue != 0);
+
+    if (lessThan != bit) {
+        float t0 = keys[li], t1 = keys[li + 1];
+        keys[li]     = keys[ri];
+        keys[li + 1] = keys[ri + 1];
+        keys[ri]     = t0;
+        keys[ri + 1] = t1;
+    }
+}

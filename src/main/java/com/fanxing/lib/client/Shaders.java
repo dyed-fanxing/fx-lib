@@ -1,84 +1,54 @@
 package com.fanxing.lib.client;
 
 import com.fanxing.lib.FxLib;
+import com.fanxing.lib.client.render.instance.InstancedShaderProgram;
+import com.fanxing.lib.client.render.instance.format.ParticleInstanceFormat;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
 import java.io.IOException;
 
 @EventBusSubscriber(modid = FxLib.MOD_ID, value = Dist.CLIENT)
 public class Shaders {
-    private static ShaderInstance whiteEntityShader;
-    private static ShaderInstance flyBasicShader;
-    private static ShaderInstance topFadeShader;
+    public static ShaderInstance particleShader;
+    public static ShaderInstance rampCutoutShader;
 
-    private static ShaderInstance entityTranslucentEmissiveAdjustableShader;
-    public static ShaderInstance screenShader;
-    public static ShaderInstance depthDebugShader;
+    public static ShaderInstance getParticleShader() {
+        return particleShader;
+    }
+    public static ShaderInstance getRampCutoutShader() {
+        return rampCutoutShader;
+    }
 
-    public static ShaderInstance getWhiteEntityShader() {
-        return whiteEntityShader;
-    }
-    public static ShaderInstance getFlyBasicShader() {
-        return flyBasicShader;
-    }
-    public static ShaderInstance getTopFadeShader() {
-        return topFadeShader;
-    }
-    public static ShaderInstance getEntityTranslucentEmissiveAdjustableShader() { return entityTranslucentEmissiveAdjustableShader;}
-    public static ShaderInstance getScreenShader() { return screenShader;}
 
-    public static ShaderInstance getDepthDebugShader() {
-        return depthDebugShader;
-    }
+
+    // 实例化着色器（手动初始化）
+    public static InstancedShaderProgram particleInstancedShader;
 
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
         event.registerShader(new ShaderInstance(
-                        event.getResourceProvider(),
-                        ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "white_entity"),
-                        DefaultVertexFormat.NEW_ENTITY
-                ),
-                shader -> whiteEntityShader = shader
-        );
-        event.registerShader(new ShaderInstance(
-                        event.getResourceProvider(),
-                        ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "fly_basic"),
-                        DefaultVertexFormat.NEW_ENTITY
-                ),
-                shader -> flyBasicShader = shader);
-        event.registerShader(new ShaderInstance(
-                        event.getResourceProvider(),
-                        ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "top_fade"),
-                        DefaultVertexFormat.NEW_ENTITY
-                ),
-                shader -> topFadeShader = shader);
-        event.registerShader(new ShaderInstance(
-                        event.getResourceProvider(),
-                        ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "entity_translucent_emissive_adjustable"),
-                        DefaultVertexFormat.NEW_ENTITY
-                ),
-                shader -> entityTranslucentEmissiveAdjustableShader = shader);
+                event.getResourceProvider(),
+                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "particle"),
+                DefaultVertexFormat.PARTICLE
+        ), shader -> particleShader = shader);
         event.registerShader(new ShaderInstance(
                 event.getResourceProvider(),
-                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "screen"),
-                DefaultVertexFormat.NEW_ENTITY
-        ), shader -> screenShader = shader);
-        event.registerShader(new ShaderInstance(
-                event.getResourceProvider(),
-                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "screen"),
-                DefaultVertexFormat.NEW_ENTITY
-        ), shader -> screenShader = shader);
-        event.registerShader(new ShaderInstance(
-                event.getResourceProvider(),
-                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "depth_debug"),
-                DefaultVertexFormat.NEW_ENTITY
-        ), shader -> depthDebugShader = shader);
+                ResourceLocation.fromNamespaceAndPath(FxLib.MOD_ID, "ramp_cutout"),
+                DefaultVertexFormat.PARTICLE
+        ), shader -> rampCutoutShader = shader);
     }
-
+    // 在客户端设置阶段初始化实例化着色器
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+//            particleInstancedShader = InstancedShaderProgram.create(FxLib.MOD_ID,"particle", ParticleInstanceFormat.FLOATS_PER_PARTICLE);
+        });
+    }
 }

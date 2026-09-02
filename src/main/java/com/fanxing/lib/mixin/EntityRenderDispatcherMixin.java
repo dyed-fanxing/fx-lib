@@ -1,7 +1,7 @@
 package com.fanxing.lib.mixin;
 
 import com.fanxing.lib.client.debug.OBBCCDDebugRenderer;
-import com.fanxing.lib.client.render.shape.CubeRenderer;
+import com.fanxing.lib.client.render.geometry.CubeRenderer;
 import com.fanxing.lib.entity.capability.OBBHolder;
 import com.fanxing.lib.entity.capability.OBBRotationCollider;
 import com.fanxing.lib.entity.capability.QuaternionRotatable;

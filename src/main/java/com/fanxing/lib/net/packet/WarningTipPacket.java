@@ -1,7 +1,7 @@
 package com.fanxing.lib.net.packet;
 
 import com.fanxing.lib.FxLib;
-import com.fanxing.lib.client.render.effect.EffectRendererHandler;
+import com.fanxing.lib.client.render.LevelStageRenderer;
 import com.fanxing.lib.client.render.effect.WarningTip;
 import com.fanxing.lib.util.ByteBufUtils;
 import com.fanxing.lib.util.math.ParametricCurveType;
@@ -75,7 +75,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Cylinder packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Cylinder(packet.x, packet.y, packet.z, packet.lifetime, packet.color,packet.r, packet.h)));
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.Cylinder(packet.x, packet.y, packet.z, packet.lifetime, packet.color,packet.r, packet.h)));
         }
 
         @Override
@@ -119,7 +119,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Cube packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Cube(packet.x, packet.y, packet.z,packet.lifetime, packet.color, packet.length, packet.width, packet.height, packet.yaw)));
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.Cube(packet.x, packet.y, packet.z,packet.lifetime, packet.color, packet.length, packet.width, packet.height, packet.yaw)));
         }
 
         @Override
@@ -158,7 +158,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Quad packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Quad(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw)));
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.Quad(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw)));
         }
 
         @Override
@@ -180,7 +180,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Quad packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.QuadPrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw)));
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.QuadPrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw)));
         }
 
         @Override
@@ -218,7 +218,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(Circle packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.Circle(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.radius, packet.delay)));
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.Circle(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.radius, packet.delay)));
         }
 
         @Override
@@ -249,7 +249,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(QuadCirclePrecession packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.QuadCirclePrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw, packet.radius)));
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.QuadCirclePrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.length, packet.width, packet.yaw, packet.radius)));
         }
 
         @Override
@@ -299,7 +299,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
         }
 
         public static void handle(CurveStrip packet, IPayloadContext context) {
-            context.enqueueWork(() -> EffectRendererHandler.addDecoration(new WarningTip.CurveStripPrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.radius, packet.width, packet.yaw, packet.segments, packet.curveType.create(packet.params)) {
+            context.enqueueWork(() -> LevelStageRenderer.addDecoration(new WarningTip.CurveStripPrecession(packet.x, packet.y, packet.z, packet.lifetime, packet.color, packet.radius, packet.width, packet.yaw, packet.segments, packet.curveType.create(packet.params)) {
             }));
         }
 
@@ -361,7 +361,7 @@ public abstract class WarningTipPacket implements CustomPacketPayload {
                 Function<Float, Vec3> baseCurve = packet.curveType.create(packet.params);
                 for (int s = 0; s < packet.count; s++) {
                     float yaw = s * 360f / packet.count;   // 均匀分布角度
-                    EffectRendererHandler.addDecoration(new WarningTip.CurveStripPrecession(
+                    LevelStageRenderer.addDecoration(new WarningTip.CurveStripPrecession(
                             packet.x, packet.y, packet.z,
                             packet.lifetime, packet.color,
                             packet.radius, packet.width, yaw,

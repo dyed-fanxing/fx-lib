@@ -3,7 +3,10 @@ package com.fanxing.lib.client.gui.component;
 import com.fanxing.lib.mixin.EditBoxAccessor;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 
 import java.util.function.Consumer;
@@ -15,12 +18,15 @@ public class IntegerEditBox extends EditBox {
     protected boolean wrap = false;
     private boolean insideCorrection = false;
 
-    public IntegerEditBox(Font font, IntConsumer onValueChange) {
-        this(font, 0, 0, 0, 0, Component.empty(), Integer.MIN_VALUE, Integer.MAX_VALUE, 1, 0, onValueChange);
+    public IntegerEditBox(int initial,IntConsumer onValueChange,Font font) {
+        this(0, 0, 0, 0, Component.empty(), Integer.MIN_VALUE, Integer.MAX_VALUE, 1, initial, onValueChange,font);
+    }
+    public IntegerEditBox(IntConsumer onValueChange,Font font) {
+        this(0, 0, 0, 0, Component.empty(), Integer.MIN_VALUE, Integer.MAX_VALUE, 1, 0, onValueChange,font);
     }
 
-    public IntegerEditBox(Font font, int x, int y, int width, int height, Component message,
-                          int min, int max, int step, int initial, IntConsumer onValueChange) {
+    public IntegerEditBox(int x, int y, int width, int height, Component message,
+                          int min, int max, int step, int initial, IntConsumer onValueChange,Font font) {
         super(font, x, y, width, height, message);
         this.min = min;
         this.max = max;
@@ -31,6 +37,16 @@ public class IntegerEditBox extends EditBox {
         setValueSilently(applyBoundary(initial));
         setResponder(this::onTextChanged);
     }
+
+    public static IntegerEditBox create(String translationKey, int initial, IntConsumer consumer, Font font) {
+        IntegerEditBox box = new IntegerEditBox(initial,consumer, font);
+        MutableComponent hint = Component.translatable(translationKey);
+        String tooltipString = translationKey + ".tooltip";
+        if (I18n.exists(tooltipString)) box.setTooltip(Tooltip.create(Component.translatable(tooltipString)));
+        box.setHint(hint);
+        return box;
+    }
+
 
     @Override
     public void setWidth(int width) {
@@ -93,8 +109,7 @@ public class IntegerEditBox extends EditBox {
     }
 
     public void setValueSilently(int value) {
-        EditBoxAccessor accessor = (EditBoxAccessor) this;
-        Consumer<String> oldResponder = accessor.responder();
+        Consumer<String> oldResponder = responder;
         setResponder(null);
         setValue(value);
         setResponder(oldResponder);

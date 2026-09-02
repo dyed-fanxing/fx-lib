@@ -46,7 +46,6 @@ public class ParametricCurveUtils {
             return new Vec3(x, 0, z);
         };
     }
-    // --- 便捷重载方法 ---
     // 只指定振幅，频率默认为最平滑的 2.5
     public static Function<Float, Vec3> radial(float amplitude) {
         return radial(2.5f, amplitude);

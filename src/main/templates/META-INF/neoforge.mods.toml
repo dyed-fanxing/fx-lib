@@ -42,8 +42,8 @@ config = "fx_lib.mixins.json"
 
 # [[accessTransformers]] 块允许您声明您的 AT 文件位置。
 # 如果省略此块，将尝试回退从 META-INF/accesstransformer.cfg 加载 AT
-#[[accessTransformers]]
-#file="META-INF/accesstransformer.cfg"
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
 
 # coremods 配置文件路径不可配置，始终从 META-INF/coremods.json 加载
 

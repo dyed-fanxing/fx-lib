@@ -4,6 +4,7 @@ package com.fanxing.lib.util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -156,8 +157,7 @@ public class RotUtils {
     }
     /**
      * 局部旋转顺序：先绕世界 Y 轴转 yaw，再绕局部 X 轴转 pitch。
-     * 等价于固定轴复合矩阵 R = Ry(yaw) * Rx(pitch)。
-     * key 因先Y，再局部X 需要每次旋转后都要计算出新的旋转轴然后再绕该轴旋转，计算复杂麻烦，所以用固定轴复合矩阵
+     * KEY 等价于固定轴复合矩阵 R = Ry(yaw) * Rx(pitch)。 即先绕世界X旋转，再绕世界Y旋转，该旋转始终是针对初始世界旋转轴的
      * @param x,y,z 相对坐标
      * @param yaw,pitch 航偏,仰俯
      * @return 世界向量
@@ -178,9 +178,8 @@ public class RotUtils {
         // 再绕 Y 轴旋转 yawRad
         float xOut = x * cosYaw + z1 * sinYaw;
         float zOut = z1 * cosYaw - x * sinYaw;
-        float yOut = y1;
 
-        return new Vec3(xOut, yOut, zOut);
+        return new Vec3(xOut, y1, zOut);
     }
 
     public static Vec3 rotateYXZ(Vec3 pos,float yaw,float pitch,float roll){
@@ -190,7 +189,7 @@ public class RotUtils {
     /**
      * 局部旋转顺序：先绕世界 Y 轴转 yaw，再绕局部 X 轴转 pitch，最后绕局部 Z 轴转 roll。
      * 等价于固定轴复合矩阵 R = Ry(yaw) * Rx(pitch) * Rz(roll)。
-     * key 因先Y，再局部X，再局部Z 需要每次旋转后都要计算出新的旋转轴然后再绕该轴旋转，计算复杂麻烦，所以用固定轴复合矩阵
+     * KEY 等价于固定轴复合矩阵 R = Ry(yaw) * Rx(pitch) * Rz(roll)。 即先绕世界Z旋转，再绕世界X旋转，再绕世界Y旋转，该旋转始终是针对初始世界旋转轴的
      * @param x,y,z 相对坐标
      * @param yaw 航偏角（度）
      * @param pitch 仰俯角（度）
@@ -224,6 +223,65 @@ public class RotUtils {
         double yOut = m10 * x + m11 * y + m12 * z;
         double zOut = m20 * x + m21 * y + m22 * z;
         return new Vec3(xOut, yOut, zOut);
+    }
+
+
+
+    public static void buildMatrix3f(float yaw, float pitch,float[] out) {
+        float yawRad = -yaw * Mth.DEG_TO_RAD;
+        float pitchRad = pitch * Mth.DEG_TO_RAD;
+        float cosY = Mth.cos(yawRad), sinY = Mth.sin(yawRad);
+        float cosP = Mth.cos(pitchRad), sinP = Mth.sin(pitchRad);
+        out[0] = cosP * sinY; out[1] = -sinP; out[2] = cosP * cosY;   // dir
+        out[3] = cosY;        out[4] = 0;     out[5] = -sinY;          // right
+        out[6] = sinP * sinY; out[7] = cosP;  out[8] = sinP * cosY;    // up
+    }
+    /**
+     * 根据欧拉角 (yaw, pitch, roll) 计算世界空间的三个轴向量。
+     * 旋转顺序：先绕世界 Y 轴转 yaw，再绕局部 X 轴转 pitch，最后绕局部 Z 轴转 roll。
+     * 结果写入 out 数组，长度为 9：依次为 (dx,dy,dz, rx,ry,rz, ux,uy,uz)
+     */
+    public static void buildMatrix3f(float yaw, float pitch, float roll, float[] out) {
+        float yawRad   = -yaw * Mth.DEG_TO_RAD;   // MC 的 yaw 取反
+        float pitchRad =  pitch * Mth.DEG_TO_RAD;
+        float rollRad  =  roll * Mth.DEG_TO_RAD;
+
+        float cy = Mth.cos(yawRad), sy = Mth.sin(yawRad);
+        float cp = Mth.cos(pitchRad), sp = Mth.sin(pitchRad);
+        float cr = Mth.cos(rollRad), sr = Mth.sin(rollRad);
+
+        // 旋转矩阵 R = Ry(yaw) * Rx(pitch) * Rz(roll)
+        // 矩阵的列向量分别为：Z 轴方向（dir）、X 轴方向（right）、Y 轴方向（up）
+        // 第 0 列（局部 X → 世界 right）
+        out[3] =  cy * cr + sy * sp * sr;   // rx
+        out[4] =  cp * sr;                  // ry
+        out[5] = -sy * cr + cy * sp * sr;   // rz
+
+        // 第 1 列（局部 Y → 世界 up）
+        out[6] = -cy * sr + sy * sp * cr;   // ux
+        out[7] =  cp * cr;                  // uy
+        out[8] =  sy * sr + cy * sp * cr;   // uz
+
+        // 第 2 列（局部 Z → 世界 dir）
+        out[0] =  sy * cp;                  // dx
+        out[1] = -sp;                       // dy
+        out[2] =  cy * cp;                  // dz
+    }
+
+
+    public static Vec3 rotate(float x, float y, float z, float[] matrix3f) {
+        // matrix3f 长度至少为 9，布局：[dirX, dirY, dirZ, rightX, rightY, rightZ, upX, upY, upZ]
+        double wx = x * matrix3f[3] + y * matrix3f[6] + z * matrix3f[0];
+        double wy = x * matrix3f[4] + y * matrix3f[7] + z * matrix3f[1];
+        double wz = x * matrix3f[5] + y * matrix3f[8] + z * matrix3f[2];
+        return new Vec3(wx, wy, wz);
+    }
+    public static Vec3 rotate(Vec3 pos, float[] matrix3f) {
+        // matrix3f 长度至少为 9，布局：[dirX, dirY, dirZ, rightX, rightY, rightZ, upX, upY, upZ]
+        double wx = pos.x * matrix3f[3] + pos.y * matrix3f[6] + pos.z * matrix3f[0];
+        double wy = pos.x * matrix3f[4] + pos.y * matrix3f[7] + pos.z * matrix3f[1];
+        double wz = pos.x * matrix3f[5] + pos.y * matrix3f[8] + pos.z * matrix3f[2];
+        return new Vec3(wx, wy, wz);
     }
 
     /**
@@ -262,6 +320,5 @@ public class RotUtils {
         Vec3 rotatedPerp = perpendicular.scale(cos).add(cross.scale(sin));
         return parallel.add(rotatedPerp);
     }
-
 
 }

@@ -1,19 +1,19 @@
 package com.fanxing.lib.client.render.effect;
 
-import com.fanxing.lib.client.render.shape.CircleRenderer;
-import com.fanxing.lib.client.render.shape.CubeRenderer;
-import com.fanxing.lib.client.render.shape.CylinderRenderer;
-import com.fanxing.lib.client.render.shape.QuadRenderer;
-import com.fanxing.lib.util.math.ease.EaseCurvesUtils;
+import com.fanxing.lib.client.render.geometry.CubeRenderer;
+import com.fanxing.lib.client.render.geometry.CylinderRenderer;
+import com.fanxing.lib.client.render.geometry.QuadRenderer;
+import com.fanxing.lib.util.math.ease.EaseUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.fanxing.lib.ConfigFxLib;
-import com.fanxing.lib.client.render.type.RenderTypes;
+import com.fanxing.lib.client.render.type.RenderTypesFxLib;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.FastColor;
@@ -96,9 +96,8 @@ public abstract class WarningTip extends Effect {
             poseStack.pushPose();
             poseStack.translate(x, y, z);
             poseStack.translate(0, 0.01f, 0);
-
-            CylinderRenderer.render(poseStack.last(),bufferSource, RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP_WHITE, RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_WHITE,new Vector3f(),radius, height, ConfigFxLib.Client.SEGMENTS.getAsInt(), r, g, b, getAlpha(partialTick),
-                    OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
+            CylinderRenderer.renderSide(poseStack.last(),bufferSource.getBuffer(RenderType.LIGHTNING),0,0,0,radius, height, ConfigFxLib.Client.SEGMENTS.getAsInt(), r, g, b, getAlpha(partialTick),
+                    OverlayTexture.NO_OVERLAY, LightTexture.FULL_BRIGHT,0f,0f,1f,1f);
             poseStack.popPose();
         }
 
@@ -129,7 +128,7 @@ public abstract class WarningTip extends Effect {
             poseStack.pushPose();
             poseStack.translate(x, y + 0.01f, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
-            CubeRenderer.renderFromBackCenter(poseStack.last(), bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_WHITE), length, width, height, r, g, b, getAlpha(partialTick), OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
+            CubeRenderer.renderFromBackCenter(poseStack.last(), bufferSource.getBuffer(RenderTypesFxLib.BEAM_TRANSPARENCY_WHITE), length, width, height, r, g, b, getAlpha(partialTick), OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY,0,0,1,1);
             poseStack.popPose();
             // 强制恢复深度写入和深度测试
             RenderSystem.depthMask(true);
@@ -165,7 +164,7 @@ public abstract class WarningTip extends Effect {
             poseStack.pushPose();
             poseStack.translate(x, y, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
-            QuadRenderer.renderForward(poseStack.last(), bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_WHITE), new Vector3f(), width, length, r, g, b, getAlpha(partialTick), OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
+            QuadRenderer.renderForward(poseStack.last(), bufferSource.getBuffer(RenderTypesFxLib.BEAM_TRANSPARENCY_WHITE), 0,0,0, width, length, r, g, b, getAlpha(partialTick), OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY, 0,0,1,1);
             poseStack.popPose();
         }
 
@@ -193,9 +192,9 @@ public abstract class WarningTip extends Effect {
             poseStack.translate(x, y, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
             float linearProgress = (age + partialTick) / lifetime;
-            VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_WHITE);
-            QuadRenderer.renderForward( poseStack.last(), consumer,new Vector3f(), width, length * Mth.sqrt(linearProgress),
-                    r, g, b, alpha, OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
+            VertexConsumer consumer = bufferSource.getBuffer(RenderTypesFxLib.BEAM_TRANSPARENCY_WHITE);
+            QuadRenderer.renderForward( poseStack.last(), consumer,0,0,0, width, length * Mth.sqrt(linearProgress),
+                    r, g, b, alpha, OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY,0,0,1,1);
             poseStack.popPose();
         }
     }
@@ -229,7 +228,7 @@ public abstract class WarningTip extends Effect {
             if(delay > 0) return;
             poseStack.pushPose();
             poseStack.translate(x, y, z);
-            CircleRenderer.renderTriangleFan(poseStack.last(), bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN_WHITE),new Vector3f(), radius, 8,new Vector3f(), r, g, b, getAlpha(partialTick), OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
+//            CircleRenderer.renderTriangleFan(poseStack.last(), bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN_WHITE),new Vector3f(), radius, 8,new Vector3f(), r, g, b, getAlpha(partialTick), OverlayTexture.NO_OVERLAY, LightTexture.FULL_SKY);
             poseStack.popPose();
         }
 
@@ -264,7 +263,7 @@ public abstract class WarningTip extends Effect {
             poseStack.pushPose();
             poseStack.translate(x, y, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
-            VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_WHITE);
+            VertexConsumer consumer = bufferSource.getBuffer(RenderTypesFxLib.ENTITY_TRANSLUCENT_EMISSIVE_WHITE);
             // 矩形
             if (rectLen > 0) {
                 float halfWidth = width / 2;
@@ -283,7 +282,7 @@ public abstract class WarningTip extends Effect {
                 float halfWidth = width / 2;
                 Vec3 rightFront = new Vec3( halfWidth, 0, rectLen);
                 Vec3 leftFront  = new Vec3(-halfWidth, 0, rectLen);
-                VertexConsumer fan = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_FAN_WHITE);
+                VertexConsumer fan = bufferSource.getBuffer(RenderType.LIGHTNING);
                 Matrix4f mat = poseStack.last().pose();
                 // 1. 绘制三角形（圆心、右前角）
                 addVertex(fan, mat, center, r, g, b, alpha);
@@ -313,7 +312,7 @@ public abstract class WarningTip extends Effect {
                     .setColor(r,g,b,a)
                     .setUv(0,0)
                     .setOverlay(OverlayTexture.NO_OVERLAY)
-                    .setLight(LightTexture.FULL_SKY)
+                    .setLight(LightTexture.FULL_BRIGHT)
                     .setNormal(0,1,0);
         }
     }
@@ -343,7 +342,7 @@ public abstract class WarningTip extends Effect {
             poseStack.translate(x, y + 0.01f, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
 
-            VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP_WHITE);
+            VertexConsumer consumer = bufferSource.getBuffer(RenderType.LIGHTNING);
             Matrix4f matrix = poseStack.last().pose();
 
             // 关键：线性进度（用于条带长度）
@@ -379,13 +378,13 @@ public abstract class WarningTip extends Effect {
                         .setColor(r, g, b, alpha)
                         .setUv(0, 0)
                         .setOverlay(OverlayTexture.NO_OVERLAY)
-                        .setLight(LightTexture.FULL_SKY)
+                        .setLight(LightTexture.FULL_BRIGHT)
                         .setNormal(poseStack.last(), 0, 1, 0);
                 consumer.addVertex(matrix, (float) right.x, (float) right.y, (float) right.z)
                         .setColor(r, g, b, alpha)
                         .setUv(0, 0)
                         .setOverlay(OverlayTexture.NO_OVERLAY)
-                        .setLight(LightTexture.FULL_SKY)
+                        .setLight(LightTexture.FULL_BRIGHT)
                         .setNormal(poseStack.last(), 0, 1, 0);
             }
             poseStack.popPose();
@@ -424,7 +423,7 @@ public abstract class WarningTip extends Effect {
 
         @Override
         protected float getProgress(float partialTick) {
-            return EaseCurvesUtils.riseHoldFallBezier((age + partialTick) / lifetime, 0.8f, 0.2f);
+            return EaseUtils.outHoldInQuad((age + partialTick) / lifetime, 0.1f, 0.8f);
         }
 
         protected int getAlpha(float partialTick) {
@@ -439,7 +438,7 @@ public abstract class WarningTip extends Effect {
             poseStack.translate(x, y + 0.01f, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
 
-            VertexConsumer consumer = bufferSource.getBuffer(RenderTypes.ENTITY_TRANSLUCENT_EMISSIVE_TRIANGLE_STRIP_WHITE);
+            VertexConsumer consumer = bufferSource.getBuffer(RenderType.LIGHTNING);
             Matrix4f matrix = poseStack.last().pose();
 
             // 使用生命周期的一半进行进动
@@ -472,13 +471,13 @@ public abstract class WarningTip extends Effect {
                         .setColor(r, g, b, alpha)
                         .setUv(0, 0)
                         .setOverlay(OverlayTexture.NO_OVERLAY)
-                        .setLight(LightTexture.FULL_SKY)
+                        .setLight(LightTexture.FULL_BRIGHT)
                         .setNormal(poseStack.last(), 0, 1, 0);
                 consumer.addVertex(matrix, (float) right.x, (float) right.y, (float) right.z)
                         .setColor(r, g, b, alpha)
                         .setUv(0, 0)
                         .setOverlay(OverlayTexture.NO_OVERLAY)
-                        .setLight(LightTexture.FULL_SKY)
+                        .setLight(LightTexture.FULL_BRIGHT)
                         .setNormal(poseStack.last(), 0, 1, 0);
             }
             poseStack.popPose();

@@ -23,5 +23,30 @@
   "gui.fx_lib.look_at": "look at",
   "gui.fx_lib.mouse": "mouse",
   "attribute.name.fx_lib.generic.target_invulnerability_ticks": "target invulnerability time",
-  "attribute.name.fx_lib.generic.self_invulnerability_ticks": "self invulnerability time"
+  "attribute.name.fx_lib.generic.self_invulnerability_ticks": "self invulnerability time",
+
+
+
+  "gui.fx_lib.particle.motion.mode": "运动模式",
+  "gui.fx_lib.particle.motion.mode.fixed": "固定",
+  "gui.fx_lib.particle.motion.mode.phy": "物理模型",
+  "gui.fx_lib.particle.motion.mode.ease": "缓动曲线",
+  "gui.fx_lib.particle.motion.mode.camera_offset": "相机偏移",
+
+
+
+
+
+
+
+
+  "util.fx_lib.math.random.range": "范围",
+  "util.fx_lib.math.min": "最小",
+  "util.fx_lib.math.max": "最大",
+  "util.fx_lib.math.random.avg_amp": "均值",
+  "util.fx_lib.math.avg": "平均",
+  "util.fx_lib.math.amp": "振幅",
+  "util.fx_lib.math.random.abs_avg_amp": "绝对均值",
+  "util.fx_lib.math.random.abs_avg_amp.tooltip": "以平均值的绝对值为中心，分别在振幅范围内随机",
+  "util.fx_lib.math.abs_avg": "绝对值均值"
 }

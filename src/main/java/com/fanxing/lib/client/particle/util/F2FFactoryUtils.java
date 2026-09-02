@@ -7,6 +7,9 @@ import it.unimi.dsi.fastutil.floats.FloatUnaryOperator;
  * @date 2026/5/11 16:13
  */
 public interface F2FFactoryUtils {
+    FloatUnaryOperator ONE = t -> 1f;
+    FloatUnaryOperator ZERO = t -> 0f;
+
     // 恒定
     static FloatUnaryOperator constant(float value) {
         return t -> value;

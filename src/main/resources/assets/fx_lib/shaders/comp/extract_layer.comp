@@ -1,0 +1,39 @@
+#version 430 core
+layout(local_size_x = 256) in;
+
+layout(std430, binding = 0) readonly buffer SortedIndices {
+    float global[]; // 每元素 2 个 float: distance, instanceIndex
+};
+
+layout(std430, binding = 1) readonly buffer ParticleMeta {
+    float meta[]; // 每粒子 2 个 float: layerID, orderInLayer
+};
+
+layout(std430, binding = 2) writeonly buffer LayerKeys {
+    float layerKeys[]; // 每元素 4 个 float: layerID, orderInLayer, sortedIndex, instanceIndex
+};
+
+layout(std430, binding = 3) buffer Count {
+    uint count;
+};
+
+uniform int totalParticles;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= totalParticles) return;
+
+    float dist  = global[id*2];
+    float instIdx = global[id*2+1];
+    int particleIdx = int(instIdx);
+    float layer = meta[particleIdx*2];
+    float order = meta[particleIdx*2+1];
+
+    if (layer > 0.0) {
+        uint target = atomicAdd(count, 1u);
+        layerKeys[target*4+0] = layer;
+        layerKeys[target*4+1] = order;
+        layerKeys[target*4+2] = float(id);     // sortedIndex：该元素在全局排序数组中的位置
+        layerKeys[target*4+3] = instIdx;        // 原始粒子索引
+    }
+}

@@ -1,6 +1,6 @@
 package com.fanxing.lib.client.render.component;
 
-import com.fanxing.lib.client.render.shape.CircleRenderer;
+import com.fanxing.lib.client.render.geometry.CircleRenderer;
 import com.fanxing.lib.util.RotUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

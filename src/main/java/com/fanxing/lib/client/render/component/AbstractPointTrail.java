@@ -1,6 +1,6 @@
 package com.fanxing.lib.client.render.component;
 
-import com.fanxing.lib.client.render.shape.TrailPoint;
+import com.fanxing.lib.client.render.geometry.TrailPoint;
 import com.fanxing.lib.util.math.ease.Curve3DUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

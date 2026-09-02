@@ -1,95 +1,127 @@
 package com.fanxing.lib.client.gui.component;
 
-import com.fanxing.lib.mixin.EditBoxAccessor;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 
-public class DoubleEditBox extends EditBox {
-    private final double min, max, step;
-    private final DecimalFormat format = new DecimalFormat("0.##");
-    private final DoubleConsumer onValueChange;
-    private boolean isValid = true;
+public class DoubleEditBox extends NumberEditBox {
+    protected final double min;
+    protected final double max;
+    protected DecimalFormat format = new DecimalFormat("0.#####");
+    protected DoubleConsumer onValueChange;
 
-    // 便捷构造器
-    public DoubleEditBox(Font font, DoubleConsumer onValueChange) {
-        this(font, 0, 0, 0, 20, Component.empty(), Double.MIN_VALUE, Double.MAX_VALUE, 0.05, 0.0, onValueChange);
+    public DoubleEditBox(double initial,DoubleConsumer onValueChange,Font font) {
+        this(0, 0, 0, 20, Component.empty(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, initial, onValueChange,font);
     }
-    public DoubleEditBox(Font font, double min, double max, double step, double initial, DoubleConsumer onValueChange) {
-        this(font, 0, 0, 0, 20, Component.empty(), min, max, step, initial, onValueChange);
+    public DoubleEditBox(int width,int height,Font font,DoubleConsumer onValueChange) {
+        this(0, 0, width, height, Component.empty(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,  0.0, onValueChange,font);
     }
-    public DoubleEditBox(Font font, int x, int y, int width, int height, Component message,
-                         double min, double max, double step, double initial, DoubleConsumer onValueChange) {
+    public DoubleEditBox(double min, double max,double initial, DoubleConsumer onValueChange,Font font) {
+        this( 0, 0, 0, 20, Component.empty(), min, max,initial, onValueChange,font);
+    }
+    public DoubleEditBox(int x, int y, int width, int height, Component message,
+                         double min, double max,double initial, DoubleConsumer onValueChange,Font font) {
         super(font, x, y, width, height, message);
         this.min = min;
         this.max = max;
-        this.step = step;
         this.onValueChange = onValueChange;
         // KEY 根据默认值直接更新宽度和高度，防止width和height=0的情况下，setValue失败
         this.width = Math.max(font.width(String.valueOf(initial)), width);
         this.height = Math.max(font.lineHeight,height);
-        setValue(initial);
-        setResponder(this::onTextChanged);
+        setValueSilently(initial);
     }
+    public DoubleEditBox precision(int precision) {
+        format = new DecimalFormat("0."+ "#".repeat(precision));
+        return  this;
+    }
+    public DoubleConsumer onValueChange(DoubleConsumer onValueChange) {
+        this.onValueChange = onValueChange;
+        return onValueChange;
+    }
+    public static DoubleEditBox create(String translationKey,float initial, DoubleConsumer consumer, Font font) {
+        DoubleEditBox box = new DoubleEditBox(initial,consumer, font);
+        MutableComponent hint = Component.translatable(translationKey);
+        String tooltipString = translationKey + ".tooltip";
+        if (I18n.exists(tooltipString)) box.setTooltip(Tooltip.create(Component.translatable(tooltipString)));
+        box.setHint(hint);
+        return box;
+    }
+
+
+
+
+
+    @Override
+    protected boolean isValidChar(char c, String cur, int cursor) {
+        if (c >= '0' && c <= '9') return true;
+        if (c == '.') return !cur.contains(".");
+        if (c == '-') return cursor == 0 && !cur.startsWith("-");
+        return false;
+    }
+
+    @Override
+    protected void onValueChange(@NotNull String text) {
+        if (text.isEmpty() || text.equals("-")) {
+            setValid(false);
+            if (responder != null) responder.accept(text);
+            return;
+        }
+        try {
+            double val = Double.parseDouble(text);
+            if (val >= min && val <= max) {
+                setValid(true);
+                onValueChange.accept(val);
+            } else setValid(false);
+        } catch (NumberFormatException e) {
+            setValid(false);
+        }
+
+        if (responder != null) responder.accept(text);
+    }
+
 
     public void setValue(double value) {
         double clamped = Mth.clamp(value, min, max);
-        setValue(format.format(clamped));
+        String formatted = format.format(clamped);
+        if (!formatted.equals(getValue())) {
+            super.setValue(formatted);
+        }
     }
 
-    // KEY 静默设置，不触发回调，防止数据双向绑定时递归调用
     public void setValueSilently(double value) {
-        EditBoxAccessor editBoxAccessor = (EditBoxAccessor)this;
-        Consumer<String> responder = editBoxAccessor.responder();
-        setResponder(null);
-        setValue(value);
-        setResponder(responder);
-    }
-    public double getDoubleValue() {
-        try {
-            return Double.parseDouble(getValue());
-        } catch (NumberFormatException e) {
-            return min;
+        double clamped = Mth.clamp(value, min, max);
+        String formatted = format.format(clamped);
+        if (!formatted.equals(getValue())) {
+            super.setValueSilently(formatted);
+            setValid(true);
         }
     }
 
-    private void onTextChanged(String text) {
-        try {
-            double val = Double.parseDouble(text);
-            if (val < min || val > max) throw new NumberFormatException();
-            onValueChange.accept(val);
-            isValid = true;
-        } catch (NumberFormatException e) {
-            isValid = false;
-        }
+    protected void commit() {
+        if (isValid()) super.setValueSilently(format.format(Double.parseDouble(getValue())));
+        else setValue(0);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (isFocused()) {
-            if (keyCode == 262) { // 右箭头
-                setValue(getDoubleValue() + step);
-                return true;
-            } else if (keyCode == 263) { // 左箭头
-                setValue(getDoubleValue() - step);
-                return true;
-            }
+        if (isFocused() && keyCode == 257) {
+            commit();
+            return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
-        if (!isValid) {
-            graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), 0xFF5555);
-        }
+    public void setFocused(boolean focused) {
+        if (!focused && isFocused()) commit();
+        super.setFocused(focused);
     }
+
 }

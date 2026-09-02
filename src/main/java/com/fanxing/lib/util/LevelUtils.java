@@ -1,6 +1,10 @@
 package com.fanxing.lib.util;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
@@ -112,5 +116,19 @@ public class LevelUtils {
         projectile.setPos(spawnPos);
         RotUtils.lookVecShoot(projectile, moveVector);
         return level.addFreshEntity(projectile);
+    }
+
+
+
+    public static <T extends ParticleOptions> void sendParticlesToAllTracking(
+            ServerLevel level, T particleOptions, double x, double y, double z,
+            int count, double dx, double dy, double dz, double speed
+    ) {
+        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(
+                particleOptions, false, x, y, z, (float)dx, (float)dy, (float)dz, (float)speed, count
+        );
+        for (ServerPlayer player : level.players()) {
+            player.connection.send(packet);
+        }
     }
 }

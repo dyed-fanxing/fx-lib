@@ -1,7 +1,7 @@
 package com.fanxing.lib.net.packet;
 
 import com.fanxing.lib.FxLib;
-import com.fanxing.lib.client.render.effect.EffectRendererHandler;
+import com.fanxing.lib.client.render.LevelStageRenderer;
 import com.fanxing.lib.client.render.effect.WarningTipAABB;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -42,7 +42,7 @@ public record WarningTipAABBPacket(double minX,double minY,double minZ,double ma
     }
     public static void handle(WarningTipAABBPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            EffectRendererHandler.addDecoration(new WarningTipAABB(
+            LevelStageRenderer.addDecoration(new WarningTipAABB(
                     new AABB(packet.minX, packet.minY,packet.minZ, packet.maxX, packet.maxY, packet.maxZ),
                     packet.lifetime,packet.color
             ));

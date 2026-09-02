@@ -2,6 +2,8 @@ package com.fanxing.lib.registry;
 
 import com.fanxing.lib.FxLib;
 import com.fanxing.lib.item.compoent.ColorPalette;
+import com.fanxing.lib.item.compoent.ParticleEditorScreenConfig;
+import com.fanxing.lib.item.compoent.particle.ParticleLayer;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -26,7 +28,14 @@ public class DataComponentsFxLib {
             "color_palettes", builder -> builder.persistent(Codec.list(ColorPalette.CODEC))
                     .networkSynchronized(ByteBufCodecs.collection(ArrayList::new, ColorPalette.STREAM_CODEC))
     );
-
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ParticleEditorScreenConfig>> PARTICLE_EDITOR_SCREEN_CONFIG = DATA_COMPONENTS.registerComponentType(
+            "particle_editor_screen_config", builder -> builder.persistent(ParticleEditorScreenConfig.CODEC)
+                    .networkSynchronized(ParticleEditorScreenConfig.STREAM_CODEC)
+    );
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ParticleLayer>> PARTICLE_LAYER = DATA_COMPONENTS.registerComponentType(
+            "particle_layer", builder -> builder.persistent(ParticleLayer.CODEC)
+                    .networkSynchronized(ParticleLayer.STREAM_CODEC)
+    );
     public static void register(IEventBus bus) {
         DATA_COMPONENTS.register(bus);
     }
